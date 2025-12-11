@@ -3,12 +3,13 @@
 import { orderApi } from "@/services/api";
 import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
-import { useParams, notFound } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ChevronLeft, Truck, CreditCard, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
+import { InfoRow } from "@/components/ui/InfoRow";
 
 export default function OrderDetailPage() {
   const params = useParams();
@@ -112,10 +113,6 @@ export default function OrderDetailPage() {
             {order.orderItems.map((item, idx) => (
               <div key={idx} className="flex gap-4">
                 {/* 이미지가 OrderItem에 없어서 상품명으로 대체하거나 해야 함. API 수정 전까진 Placeholder 혹은 로직 수정 필요 */}
-                {/* OrderItem 타입에 imageUrl이 없으므로 일단 API 명세 확인. 
-                   실제로는 Product 정보 조인이 필요할 수 있음. 임시로 no image 처리하거나 API가 수정되어야 함.
-                   현재 OrderItem에는 productName, price, quantity, color 등만 있음. 
-                */}
                 <div className="w-20 h-20 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -157,35 +154,15 @@ export default function OrderDetailPage() {
 
           {delivery ? (
             <div className="space-y-4 text-sm md:text-base">
-              <div className="flex gap-4">
-                <span className="w-20 text-slate-500 font-medium">받는 분</span>
-                <span className="text-slate-900 font-medium">
-                  {delivery.receiverName}
-                </span>
-              </div>
-              <div className="flex gap-4">
-                <span className="w-20 text-slate-500 font-medium">연락처</span>
-                <span className="text-slate-900 font-medium">
-                  {delivery.receiverPhone}
-                </span>
-              </div>
-              <div className="flex gap-4">
-                <span className="w-20 text-slate-500 font-medium">주소</span>
-                <div className="text-slate-900 font-medium">
-                  <p>({delivery.zipcode})</p>
-                  <p>{delivery.addressLine1}</p>
-                  <p>{delivery.addressLine2}</p>
-                </div>
-              </div>
+              <InfoRow label="받는 분" value={delivery.receiverName} />
+              <InfoRow label="연락처" value={delivery.receiverPhone} />
+              <InfoRow label="주소">
+                <p>({delivery.zipcode})</p>
+                <p>{delivery.addressLine1}</p>
+                <p>{delivery.addressLine2}</p>
+              </InfoRow>
               {delivery.message && (
-                <div className="flex gap-4">
-                  <span className="w-20 text-slate-500 font-medium">
-                    배송메모
-                  </span>
-                  <span className="text-slate-900 font-medium">
-                    {delivery.message}
-                  </span>
-                </div>
+                <InfoRow label="배송메모" value={delivery.message} />
               )}
             </div>
           ) : (
