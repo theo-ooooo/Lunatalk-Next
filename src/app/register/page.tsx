@@ -66,7 +66,7 @@ export default function RegisterPage() {
               required
               minLength={4}
               maxLength={50}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-slate-500 focus:border-slate-500"
               value={formData.username}
               onChange={handleChange}
             />
@@ -78,7 +78,7 @@ export default function RegisterPage() {
               type="password"
               required
               minLength={8}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-slate-500 focus:border-slate-500"
               value={formData.password}
               onChange={handleChange}
             />
@@ -89,7 +89,7 @@ export default function RegisterPage() {
               name="confirmPassword"
               type="password"
               required
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-slate-500 focus:border-slate-500"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
@@ -100,7 +100,7 @@ export default function RegisterPage() {
               name="email"
               type="email"
               required
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-slate-500 focus:border-slate-500"
               value={formData.email}
               onChange={handleChange}
             />
@@ -112,7 +112,7 @@ export default function RegisterPage() {
               type="tel"
               required
               placeholder="010-0000-0000"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-slate-500 focus:border-slate-500"
               value={formData.phone}
               onChange={handleChange}
             />
@@ -121,7 +121,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 mt-8"
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50 mt-8"
           >
             {loading ? '가입 중...' : '회원가입'}
           </button>

@@ -31,13 +31,13 @@ export default function ExhibitionBanner({
   return (
     <section className="relative w-full py-12 md:py-20 overflow-hidden">
       {/* Background with simple color */}
-      <div className={`absolute inset-0 ${isEven ? 'bg-blue-50/50' : 'bg-gray-50/80'} -skew-y-2 transform origin-top-left scale-110`}></div>
+      <div className={`absolute inset-0 ${isEven ? 'bg-slate-100/50' : 'bg-gray-50/80'} -skew-y-2 transform origin-top-left scale-110`}></div>
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">
           {/* 텍스트 영역 */}
           <div className="flex-1 max-w-2xl pt-4 md:pt-0">
-            <span className="inline-block px-3 py-1 bg-white rounded-full text-blue-600 text-xs font-bold mb-4 shadow-sm border border-blue-100">
+            <span className="inline-block px-3 py-1 bg-white rounded-full text-slate-900 text-xs font-bold mb-4 shadow-sm border border-slate-100">
               SPECIAL EXHIBITION
             </span>
             <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-[1.2] text-slate-900 break-keep tracking-tight">

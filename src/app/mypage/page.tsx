@@ -34,7 +34,7 @@ export default function MyPage() {
           </h2>
           <p className="text-slate-500">{me.email}</p>
           <div className="mt-4 flex gap-4 text-sm">
-            <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
+            <span className="bg-slate-100 text-slate-900 px-3 py-1 rounded-full font-medium">
               일반 회원
             </span>
           </div>
@@ -66,7 +66,7 @@ export default function MyPage() {
             {ordersData.content.map((order) => (
               <div
                 key={order.orderId}
-                className="border rounded-lg p-6 bg-white hover:border-blue-200 transition-colors"
+                className="border rounded-lg p-6 bg-white hover:border-slate-300 transition-colors"
               >
                 <div className="flex justify-between items-start mb-4 pb-4 border-b">
                   <div>
@@ -105,7 +105,7 @@ export default function MyPage() {
                   <span className="text-sm text-slate-500 mr-2">
                     총 결제금액
                   </span>
-                  <span className="font-bold text-lg text-blue-600">
+                  <span className="font-bold text-lg text-slate-900">
                     {formatPrice(order.totalPrice)}원
                   </span>
                 </div>

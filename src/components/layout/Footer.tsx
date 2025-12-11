@@ -15,10 +15,10 @@ export default function Footer() {
           <div className="space-y-3 md:text-right">
             <h3 className="text-sm font-bold text-slate-800">고객센터</h3>
             <div className="flex flex-col md:items-end gap-1.5 text-[13px] text-slate-500 font-medium">
-              <a href="tel:1544-0000" className="hover:text-blue-600 transition-colors w-fit">
+              <a href="tel:1544-0000" className="hover:text-slate-900 transition-colors w-fit">
                 1544-0000
               </a>
-              <a href="mailto:cs@lunatalk.co.kr" className="hover:text-blue-600 transition-colors w-fit">
+              <a href="mailto:cs@lunatalk.co.kr" className="hover:text-slate-900 transition-colors w-fit">
                 cs@lunatalk.co.kr
               </a>
               <span className="text-slate-400">평일 09:00 - 18:00 (주말/공휴일 휴무)</span>

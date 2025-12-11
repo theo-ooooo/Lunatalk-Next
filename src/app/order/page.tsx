@@ -189,13 +189,13 @@ export default function OrderPage() {
             </div>
             <div className="border-t pt-4 mb-6 flex justify-between items-center">
               <span className="font-bold text-lg">최종 결제금액</span>
-              <span className="font-bold text-xl text-blue-600">{formatPrice(totalAmount)}원</span>
+              <span className="font-bold text-xl text-slate-900">{formatPrice(totalAmount)}원</span>
             </div>
             
             <button
               onClick={handlePayment}
               disabled={loading}
-              className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="w-full bg-slate-900 text-white font-bold py-4 rounded-lg hover:bg-slate-800 disabled:opacity-50 transition-colors"
             >
               {loading ? '결제 처리 중...' : '결제하기'}
             </button>

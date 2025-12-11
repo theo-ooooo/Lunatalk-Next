@@ -28,7 +28,7 @@ export default function OrderCompletePage() {
         </Link>
         <Link 
           href="/" 
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+          className="px-6 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800"
         >
           쇼핑 계속하기
         </Link>

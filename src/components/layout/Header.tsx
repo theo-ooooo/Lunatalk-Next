@@ -103,7 +103,7 @@ export default function Header() {
           ) : (
             <Link
               href="/login"
-              className="ml-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-full transition-all shadow-sm hover:shadow-md"
+              className="ml-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 px-5 py-2.5 rounded-full transition-all shadow-sm hover:shadow-md"
             >
               로그인
             </Link>

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { exhibitionApi, categoryApi } from "@/services/api";
 import ProductCard from "@/components/product/ProductCard";
-import ExhibitionBanner from "@/components/home/ExhibitionBanner";
 
 // 메인 페이지는 서버 컴포넌트입니다.
 export default async function Home() {
@@ -30,8 +29,8 @@ export default async function Home() {
                   href={`/products?categoryId=${category.categoryId}`}
                   className="flex-shrink-0 snap-start flex flex-col items-center gap-3 group min-w-[72px]"
                 >
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-[24px] flex items-center justify-center group-hover:bg-blue-50 group-hover:scale-105 transition-all duration-300 shadow-sm border border-transparent group-hover:border-blue-100">
-                    <span className="text-xl md:text-2xl font-bold text-slate-400 group-hover:text-blue-600 transition-colors">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-[24px] flex items-center justify-center group-hover:bg-slate-100 group-hover:scale-105 transition-all duration-300 shadow-sm border border-transparent group-hover:border-slate-200">
+                    <span className="text-xl md:text-2xl font-bold text-slate-400 group-hover:text-slate-900 transition-colors">
                       {category.categoryName.charAt(0)}
                     </span>
                   </div>
@@ -55,14 +54,13 @@ export default async function Home() {
 
             return (
               <div key={exhibition.exhibitionId} className="relative">
-                {/* Exhibition Banner */}
-                <ExhibitionBanner exhibition={exhibition} index={index} />
+                {/* Exhibition Banner Removed as per user request */}
 
                 {/* Exhibition Products */}
                 <section className="py-12 md:py-16 container mx-auto px-4">
                   <div className="flex items-end justify-between mb-8">
                     <h3 className="text-xl md:text-2xl font-bold text-slate-900">
-                      추천 상품
+                      {exhibition.title}
                     </h3>
                     <Link
                       href={`/products`}

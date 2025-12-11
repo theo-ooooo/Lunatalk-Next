@@ -70,7 +70,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <p className="text-[11px] font-medium text-slate-400">
           {product.category?.categoryName}
         </p>
-        <h3 className="font-medium text-slate-800 text-[14px] leading-snug line-clamp-2 min-h-[2.2rem] group-hover:text-blue-600 transition-colors">
+        <h3 className="font-medium text-slate-800 text-[14px] leading-snug line-clamp-2 min-h-[2.2rem] group-hover:text-slate-900 transition-colors">
           {product.name || product.productName}
         </h3>
         <div className="pt-0.5 flex items-baseline gap-0.5">
