@@ -5,8 +5,14 @@ import { CategoryFilter } from "@/components/products/CategoryFilter";
 import ProductCard from "@/components/product/ProductCard";
 import { Loader2 } from "lucide-react";
 import Link from "next/link"; // For "홈으로 가기" button if needed, but the main flow uses router from hook
+import { use } from "react";
 
-export default function ProductsPage() {
+export default function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category: string; search: string }>;
+}) {
+  const params = use(searchParams);
   const {
     categories,
     productsData,
@@ -14,7 +20,7 @@ export default function ProductsPage() {
     selectedCategory,
     handleCategoryClick,
     searchQuery,
-  } = useProductList();
+  } = useProductList(params);
 
   const products = productsData?.content || [];
   const safeCategories = Array.isArray(categories) ? categories : [];

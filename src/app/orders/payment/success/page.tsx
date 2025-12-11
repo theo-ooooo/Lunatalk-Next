@@ -1,22 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { orderApi } from "@/services/api";
 import { Loader2 } from "lucide-react";
-import { useModalStore } from "@/store/useModalStore";
-import { Button } from "@/components/ui/Button";
 
-export default function PaymentSuccessPage() {
+export default function PaymentSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    paymentKey: string;
+    orderId: string;
+    amount: string;
+  }>;
+}) {
+  const params = use(searchParams);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { openModal, closeModal } = useModalStore();
   const [isProcessing, setIsProcessing] = useState(true);
 
   // Toss Payments에서 리다이렉트 시 전달하는 파라미터
-  const paymentKey = searchParams.get("paymentKey");
-  const orderId = searchParams.get("orderId");
-  const amount = searchParams.get("amount");
+  const paymentKey = params.paymentKey;
+  const orderId = params.orderId;
+  const amount = params.amount;
 
   useEffect(() => {
     if (!paymentKey || !orderId || !amount) {

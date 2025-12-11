@@ -1,15 +1,17 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, use, useEffect, useState } from "react";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
 import { orderApi } from "@/services/api";
 import { Loader2 } from "lucide-react";
 
-export default function PaymentCheckoutPage() {
-  const searchParams = useSearchParams();
-  const orderNumber = searchParams.get("orderNumber");
-  const customerName = searchParams.get("customerName");
+export default function PaymentCheckoutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ orderNumber: string; customerName: string }>;
+}) {
+  const params = use(searchParams);
+  const orderNumber = params.orderNumber;
+  const customerName = params.customerName;
 
   const [error, setError] = useState<string | null>(null);
 
@@ -54,18 +56,22 @@ export default function PaymentCheckoutPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <p className="text-red-500 font-bold">{error}</p>
-      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <div className="flex items-center justify-center min-h-screen bg-white">
+          <p className="text-red-500 font-bold">{error}</p>
+        </div>
+      </Suspense>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-      <Loader2 className="w-10 h-10 animate-spin text-slate-900 mb-4" />
-      <p className="text-slate-600 font-medium">
-        결제창을 불러오는 중입니다...
-      </p>
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+        <Loader2 className="w-10 h-10 animate-spin text-slate-900 mb-4" />
+        <p className="text-slate-600 font-medium">
+          결제창을 불러오는 중입니다...
+        </p>
+      </div>
+    </Suspense>
   );
 }

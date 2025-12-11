@@ -4,11 +4,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PageProductFindResponse } from "@/types/api";
 
-export function useProductList() {
+export function useProductList(params: { category: string; search: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const categoryId = searchParams.get("category");
-  const searchQuery = searchParams.get("search");
+  const categoryId = params.category;
+  const searchQuery = params.search;
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     categoryId ? Number(categoryId) : null

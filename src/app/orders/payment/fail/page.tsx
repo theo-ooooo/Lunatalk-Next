@@ -1,26 +1,29 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { XCircle } from "lucide-react";
 
-export default function PaymentFailPage() {
-  const searchParams = useSearchParams();
+export default function PaymentFailPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ code: string; message: string }>;
+}) {
+  const params = use(searchParams);
 
-  const code = searchParams.get("code");
-  const message = searchParams.get("message");
-  
+  const code = params.code;
+  const message = params.message;
+
   useEffect(() => {
-      if (window.opener) {
-          // 약간의 지연 후 메시지 전송 (UI 렌더링 확인용)
-          setTimeout(() => {
-            window.opener.postMessage(
-                { type: "PAYMENT_FAIL", message: message || "결제 실패", code },
-                window.location.origin
-            );
-            window.close();
-          }, 1500); // 1.5초 후 닫힘
-      }
+    if (window.opener) {
+      // 약간의 지연 후 메시지 전송 (UI 렌더링 확인용)
+      setTimeout(() => {
+        window.opener.postMessage(
+          { type: "PAYMENT_FAIL", message: message || "결제 실패", code },
+          window.location.origin
+        );
+        window.close();
+      }, 1500); // 1.5초 후 닫힘
+    }
   }, [message, code]);
 
   return (
