@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect, useState } from "react";
 import { InfoRow } from "@/components/ui/InfoRow";
+import { SummaryRow } from "@/components/ui/SummaryRow";
 
 export default function OrderDetailPage() {
   const params = useParams();
@@ -178,21 +179,17 @@ export default function OrderDetailPage() {
           </div>
 
           <div className="space-y-3">
-            <div className="flex justify-between text-slate-600">
-              <span>총 상품금액</span>
-              <span>{formatPrice(order.totalPrice)}원</span>
-            </div>
-            <div className="flex justify-between text-slate-600">
-              <span>배송비</span>
-              <span>0원</span>
-            </div>
-            <div className="border-t border-slate-100 my-4 pt-4 flex justify-between items-center">
-              <span className="font-bold text-lg text-slate-900">
-                총 결제금액
-              </span>
-              <span className="font-bold text-xl text-slate-900">
-                {formatPrice(order.totalPrice)}원
-              </span>
+            <SummaryRow
+              label="총 상품금액"
+              value={`${formatPrice(order.totalPrice)}원`}
+            />
+            <SummaryRow label="배송비" value="0원" />
+            <div className="border-t border-slate-100 my-4 pt-4">
+              <SummaryRow
+                label="총 결제금액"
+                value={`${formatPrice(order.totalPrice)}원`}
+                isTotal
+              />
             </div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { formatPrice } from "@/lib/utils";
 import { useOrderUpdate } from "@/hooks/order/useOrderUpdate";
+import { SummaryRow } from "@/components/ui/SummaryRow";
 
 interface OrderUpdateClientProps {
   order: Order;
