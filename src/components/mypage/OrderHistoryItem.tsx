@@ -30,7 +30,9 @@ export function OrderHistoryItem({ order }: OrderHistoryItemProps) {
                 x {item.quantity}
               </span>
             </span>
-            <span className="font-medium">{formatPrice(item.totalPrice)}원</span>
+            <span className="font-medium">
+              {formatPrice(item.totalPrice)}원
+            </span>
           </div>
         ))}
       </div>
@@ -44,4 +46,3 @@ export function OrderHistoryItem({ order }: OrderHistoryItemProps) {
     </div>
   );
 }
-

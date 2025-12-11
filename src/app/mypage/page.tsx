@@ -8,8 +8,7 @@ import { OrderHistoryItem } from "@/components/mypage/OrderHistoryItem";
 export default function MyPage() {
   const { me, ordersData, isLoading } = useMyPage();
 
-  if (!me)
-    return <div className="py-20 text-center">로그인이 필요합니다.</div>;
+  if (!me) return <div className="py-20 text-center">로그인이 필요합니다.</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -68,4 +67,3 @@ export default function MyPage() {
     </div>
   );
 }
-
