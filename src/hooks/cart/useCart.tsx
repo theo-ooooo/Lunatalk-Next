@@ -108,7 +108,7 @@ export function useCart() {
             취소
           </Button>
           <Button
-            variant="destructive"
+            variant="danger"
             fullWidth
             onClick={() => deleteMutation.mutate(id)}
           >
@@ -188,4 +188,3 @@ export function useCart() {
     handleOrder,
   };
 }
-
