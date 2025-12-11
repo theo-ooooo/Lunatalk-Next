@@ -1,25 +1,28 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
 import { categoryApi, productApi } from "@/services/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PageProductFindResponse } from "@/types/api";
 
-export function useProductList(params: { category: string; search: string }) {
+export function useProductList() {
   const router = useRouter();
-  const categoryId = params.category;
-  const searchQuery = params.search;
+  const searchParams = useSearchParams();
+  const categoryIdParam = searchParams.get("categoryId");
+  const searchQuery = searchParams.get("search");
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
-    categoryId ? Number(categoryId) : null
+    categoryIdParam ? Number(categoryIdParam) : null
   );
 
   useEffect(() => {
-    if (categoryId) {
-      setSelectedCategory(Number(categoryId));
+    if (categoryIdParam) {
+      setSelectedCategory(Number(categoryIdParam));
     } else {
       setSelectedCategory(null);
     }
-  }, [categoryId]);
+  }, [categoryIdParam]);
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
@@ -58,7 +61,10 @@ export function useProductList(params: { category: string; search: string }) {
   const handleCategoryClick = (id: number | null) => {
     setSelectedCategory(id);
     if (id) {
-      router.push(`/products?category=${id}`);
+      // 검색어 유지를 원치 않으면 검색어 제거
+      const newSearchParams = new URLSearchParams();
+      newSearchParams.set("categoryId", String(id));
+      router.push(`/products?${newSearchParams.toString()}`);
     } else {
       router.push("/products");
     }
