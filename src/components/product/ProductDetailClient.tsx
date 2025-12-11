@@ -1,17 +1,19 @@
 "use client";
 
-import { Product } from "@/types/api";
-import { formatPrice } from "@/lib/utils";
-import { Minus, Plus, ShoppingCart, Heart, Share2 } from "lucide-react";
+import { formatPrice, getImageUrl } from "@/lib/utils";
+import { Minus, Plus, ShoppingCart, Heart, Share2, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useProductDetail } from "@/hooks/product/useProductDetail";
+import { useProduct } from "@/hooks/product/useProduct";
+import Link from "next/link";
 
 interface Props {
-  product: Product;
+  productId: number;
 }
 
-export default function ProductDetailClient({ product }: Props) {
+export default function ProductDetailClient({ productId }: Props) {
+  const { product, isLoading, isError } = useProduct(productId);
   const {
     quantity,
     imgSrc,
@@ -20,6 +22,31 @@ export default function ProductDetailClient({ product }: Props) {
     handleAddToCart,
     handleBuyNow,
   } = useProductDetail(product);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-slate-300" />
+      </div>
+    );
+  }
+
+  if (isError || !product) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+        <p className="text-slate-500 font-medium">상품을 찾을 수 없습니다.</p>
+        <Link href="/products">
+          <Button variant="outline">상품 목록으로 돌아가기</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // 상세 이미지들 필터링
+  const contentImages =
+    product.images
+      ?.filter((img) => img.imageType === "PRODUCT_CONTENT")
+      .sort((a, b) => (a.imageOrder || 0) - (b.imageOrder || 0)) || [];
 
   return (
     <>
@@ -179,6 +206,46 @@ export default function ProductDetailClient({ product }: Props) {
               구매하기
             </Button>
           </div>
+        </div>
+      </div>
+
+      {/* 상세 정보 탭/영역 (moved from page.tsx to here since product is fetched here) */}
+      <div className="mt-24 md:mt-32 max-w-5xl mx-auto">
+        <div className="border-b border-gray-100 mb-12 sticky top-16 bg-white/95 backdrop-blur-sm z-10">
+          <div className="flex justify-center gap-0 md:gap-8">
+            <button className="flex-1 md:flex-none md:min-w-[160px] py-4 text-slate-900 font-bold border-b-2 border-slate-900 transition-colors">
+              상품 상세 정보
+            </button>
+            <button className="flex-1 md:flex-none md:min-w-[160px] py-4 text-slate-400 font-medium hover:text-slate-600 transition-colors border-b-2 border-transparent">
+              배송/교환/반품
+            </button>
+          </div>
+        </div>
+
+        <div className="w-full">
+          {contentImages.length > 0 ? (
+            <div className="space-y-0 flex flex-col items-center">
+              {contentImages.map((img) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={img.imageKey}
+                  src={getImageUrl(img.imageUrl)}
+                  alt="상품 상세 이미지"
+                  className="w-full h-auto block max-w-4xl"
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="py-40 text-center flex flex-col items-center justify-center bg-gray-50/50 rounded-[32px] border border-dashed border-gray-200">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4 text-2xl">
+                ?
+              </div>
+              <p className="text-slate-500 font-medium">
+                상세 정보 이미지가 없습니다.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>

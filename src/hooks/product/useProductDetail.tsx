@@ -9,7 +9,7 @@ import { useModalStore } from "@/store/useModalStore";
 import { Button } from "@/components/ui/Button";
 import React from "react";
 
-export function useProductDetail(product: Product) {
+export function useProductDetail(product: Product | undefined) {
   const [quantity, setQuantity] = useState(1);
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
@@ -18,6 +18,7 @@ export function useProductDetail(product: Product) {
 
   // 대표 이미지 (썸네일) 초기화
   const getInitialImage = () => {
+    if (!product) return "/placeholder.jpg"; // Default placeholder
     const mainImage =
       product.images?.find((i) => i.imageType === "PRODUCT_THUMBNAIL")
         ?.imageUrl || product.images?.[0]?.imageUrl;
@@ -33,6 +34,7 @@ export function useProductDetail(product: Product) {
   }, [product]);
 
   const handleQuantityChange = (delta: number) => {
+    if (!product) return;
     setQuantity((prev) =>
       Math.max(1, Math.min(product.quantity, prev + delta))
     );
@@ -122,6 +124,7 @@ export function useProductDetail(product: Product) {
       showLoginModal();
       return;
     }
+    if (!product) return;
 
     addToCartMutation.mutate({
       productId: product.productId,
@@ -134,6 +137,7 @@ export function useProductDetail(product: Product) {
       showLoginModal();
       return;
     }
+    if (!product) return;
     addToCartMutation.mutate(
       {
         productId: product.productId,
