@@ -44,7 +44,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="aspect-square relative overflow-hidden rounded-[16px] bg-gray-50 mb-3 transition-all duration-300 group-hover:shadow-md">
         <Image
           src={imgSrc}
-          alt={product.name}
+          alt={product.name || product.productName || "상품 이미지"}
           fill
           className={`object-cover transition-transform duration-500 ${
             isHovered ? "scale-105" : "scale-100"
