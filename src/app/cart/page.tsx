@@ -7,15 +7,14 @@ import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useOrderStore } from "@/store/useOrderStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useModalStore } from "@/store/useModalStore";
 import { Button } from "@/components/ui/Button";
+import { SummaryRow } from "@/components/ui/SummaryRow";
 
 export default function CartPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { setOrderItems } = useOrderStore();
   const { isAuthenticated } = useAuthStore();
   const { openModal, closeModal } = useModalStore();
 
@@ -299,22 +298,18 @@ export default function CartPage() {
                 <div className="bg-slate-50 p-6 rounded-xl sticky top-24">
                   <h3 className="font-bold text-lg mb-4">결제 예정 금액</h3>
                   <div className="space-y-2 mb-6">
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">총 상품금액</span>
-                      <span className="font-bold">
-                        {formatPrice(totalAmount)}원
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">배송비</span>
-                      <span className="font-bold">0원</span>
-                    </div>
+                    <SummaryRow
+                      label="총 상품금액"
+                      value={`${formatPrice(totalAmount)}원`}
+                    />
+                    <SummaryRow label="배송비" value="0원" />
                   </div>
-                  <div className="border-t pt-4 mb-6 flex justify-between items-center">
-                    <span className="font-bold text-lg">총 결제금액</span>
-                    <span className="font-bold text-xl text-slate-900">
-                      {formatPrice(totalAmount)}원
-                    </span>
+                  <div className="border-t pt-4 mb-6">
+                    <SummaryRow
+                      label="총 결제금액"
+                      value={`${formatPrice(totalAmount)}원`}
+                      isTotal
+                    />
                   </div>
                   <Button
                     variant="primary"
