@@ -1,0 +1,203 @@
+// 공통 응답 타입
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+}
+
+// 페이지네이션 관련 타입
+export interface Pageable {
+  page: number;
+  size: number;
+  sort?: string[];
+}
+
+export interface SortObject {
+  empty: boolean;
+  sorted: boolean;
+  unsorted: boolean;
+}
+
+export interface PageableObject {
+  offset: number;
+  sort: SortObject;
+  paged: boolean;
+  pageNumber: number;
+  pageSize: number;
+  unpaged: boolean;
+}
+
+export interface PageResponse<T> {
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  content: T[];
+  number: number;
+  sort: SortObject;
+  numberOfElements: number;
+  pageable: PageableObject;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+// 카테고리
+export interface Category {
+  categoryId: number;
+  categoryName: string;
+  status: 'ACTIVE' | 'DELETED';
+  visibility: 'VISIBLE' | 'HIDDEN';
+  productCount: number;
+}
+
+// 이미지
+export interface Image {
+  id: number;
+  imageType: 'PRODUCT_THUMBNAIL' | 'PRODUCT_CONTENT';
+  imageKey: string;
+  imagePath?: string;
+  imageUrl?: string; // FindImageDto 호환
+  imageOrder?: number;
+}
+
+// 상품
+export interface Product {
+  productId: number;
+  name: string; // ProductFindResponse에서는 name, FindProductDto에서는 productName
+  productName?: string; // 호환성 위해 추가
+  price: number;
+  quantity: number;
+  visibility: 'VISIBLE' | 'HIDDEN';
+  colors: string[];
+  images: Image[]; // FindImageDto
+  category: Category;
+}
+
+export interface ProductFindResponse extends Product {}
+
+// 기획전
+export interface Exhibition {
+  exhibitionId: number;
+  title: string;
+  description: string;
+  visibility: 'VISIBLE' | 'HIDDEN';
+  startAt: string;
+  endAt: string;
+  products: ExhibitionProductDto[];
+}
+
+export interface ExhibitionProductDto {
+  product: Product; // FindProductDto
+  sortOrder: number;
+}
+
+// 장바구니
+export interface CartItem {
+  cartItemId: number;
+  product: Product; // FindProductDto
+  quantity: number;
+}
+
+// 주문
+export interface OrderItem {
+  productName: string;
+  price: number;
+  quantity: number;
+  totalPrice: number;
+  color?: string;
+}
+
+export interface Delivery {
+  deliveryId: number;
+  receiverName: string;
+  receiverPhone: string;
+  addressLine1: string;
+  addressLine2: string;
+  zipcode: string;
+  message: string;
+  courierCompany: string;
+  trackingNumber: string;
+  status: 'READY' | 'SHIPPED' | 'DELIVERED' | 'RETURNED' | 'REDELIVERY';
+}
+
+export interface Order {
+  orderId: number;
+  orderNumber: string;
+  status: 'ORDERED' | 'PAYMENT_COMPLETED' | 'PAYMENT_FAILED' | 'CANCELLED' | 'SHIPPED' | 'DELIVERED';
+  totalPrice: number;
+  createdAt: string;
+  nickname?: string;
+  orderItems: OrderItem[];
+  deliveries?: Delivery[];
+  member?: Member;
+}
+
+// 회원
+export interface Member {
+  memberId: number;
+  username: string;
+  nickname: string;
+  phone: string;
+  email: string;
+  profileImgUrl?: string;
+  createdAt: string;
+}
+
+// 결제 (토스)
+export interface PaymentConfirmRequest {
+  paymentKey: string;
+  orderId: string;
+  amount: number;
+}
+
+export interface PaymentConfirmResponse {
+  orderNumber: string;
+  amount: number;
+  paymentStatus: 'READY' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
+  orderStatus: string;
+  paymentKey: string;
+  approvedAt: string;
+}
+
+// 인증
+export interface AuthTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+// 요청 DTO들
+export interface LoginRequest {
+  username: string;
+  password?: string; // 소셜 로그인 등 고려하여 optional 가능성 열어둠
+}
+
+export interface CreateMemberRequest {
+  username: string;
+  password: string;
+  phone: string;
+  email: string;
+}
+
+export interface CreateCartItemRequest {
+  productId: number;
+  quantity: number;
+}
+
+export interface OrderCreateRequest {
+  "구매할 상품들": {
+    "상품 ID": number;
+    "상품 갯수": number;
+    "상품 옵션"?: {
+      color: string;
+    };
+  }[];
+}
+
+export interface OrderCreateDeliveryRequest {
+  address1: string;
+  address2: string;
+  phoneNumber: string;
+  zipCode: string;
+  name: string;
+  message?: string;
+}
+
