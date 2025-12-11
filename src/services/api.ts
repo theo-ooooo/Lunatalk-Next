@@ -114,8 +114,12 @@ export const orderApi = {
       body: JSON.stringify(data),
     });
   },
-  getOrders: async (params: { page: number; size: number }) => {
-    return fetchExtended<PageOrderListResponse>("/orders", {
+  getOrders: async (params: {
+    page: number;
+    size: number;
+    sort?: string[];
+  }) => {
+    return fetchExtended<PageOrderListResponse>("/members/me/orders", {
       params: { ...params } as any,
     });
   },

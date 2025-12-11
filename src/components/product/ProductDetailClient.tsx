@@ -9,7 +9,8 @@ import { cartApi } from "@/services/api";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import Image from "next/image";
-import Modal from "@/components/ui/Modal";
+import { useModalStore } from "@/store/useModalStore";
+import { Button } from "@/components/ui/Button";
 
 interface Props {
   product: Product;
@@ -20,9 +21,7 @@ export default function ProductDetailClient({ product }: Props) {
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showCartModal, setShowCartModal] = useState(false);
+  const { openModal, closeModal } = useModalStore();
 
   // 대표 이미지 (썸네일) 초기화
   const getInitialImage = () => {
@@ -48,21 +47,88 @@ export default function ProductDetailClient({ product }: Props) {
     );
   };
 
+  const showLoginModal = () => {
+    openModal({
+      title: "로그인 필요",
+      content: (
+        <div className="text-center">
+          <p>로그인이 필요한 서비스입니다.</p>
+          <p className="mt-1 text-sm text-slate-400">
+            로그인 페이지로 이동하시겠습니까?
+          </p>
+        </div>
+      ),
+      footer: (
+        <div className="flex gap-2 w-full">
+          <Button variant="outline" fullWidth onClick={closeModal}>
+            취소
+          </Button>
+          <Button
+            variant="primary"
+            fullWidth
+            onClick={() => {
+              closeModal();
+              router.push("/login");
+            }}
+          >
+            로그인하기
+          </Button>
+        </div>
+      ),
+    });
+  };
+
   const addToCartMutation = useMutation({
     mutationFn: cartApi.addToCart,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
-      setShowCartModal(true); // 장바구니 담기 성공 시 모달 띄움
+      // Show success modal
+      openModal({
+        title: "장바구니 담기 완료",
+        content: (
+          <div className="text-center">
+            <p>상품이 장바구니에 담겼습니다.</p>
+            <p className="mt-1 text-sm text-slate-400">
+              장바구니로 이동하시겠습니까?
+            </p>
+          </div>
+        ),
+        footer: (
+          <div className="flex gap-2 w-full">
+            <Button variant="outline" fullWidth onClick={closeModal}>
+              계속 쇼핑
+            </Button>
+            <Button
+              variant="primary"
+              fullWidth
+              onClick={() => {
+                closeModal();
+                router.push("/cart");
+              }}
+            >
+              장바구니로 이동
+            </Button>
+          </div>
+        ),
+      });
     },
     onError: (error) => {
-      alert("장바구니 담기에 실패했습니다. 다시 시도해주세요.");
       console.error(error);
+      openModal({
+        title: "오류",
+        content: <p>장바구니 담기에 실패했습니다. 다시 시도해주세요.</p>,
+        footer: (
+          <Button variant="primary" fullWidth onClick={closeModal}>
+            확인
+          </Button>
+        ),
+      });
     },
   });
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      setShowLoginModal(true); // 로그인 유도 모달
+      showLoginModal();
       return;
     }
 
@@ -74,7 +140,7 @@ export default function ProductDetailClient({ product }: Props) {
 
   const handleBuyNow = () => {
     if (!isAuthenticated) {
-      setShowLoginModal(true); // 로그인 유도 모달
+      showLoginModal();
       return;
     }
     addToCartMutation.mutate(
@@ -86,17 +152,6 @@ export default function ProductDetailClient({ product }: Props) {
         onSuccess: () => router.push("/cart"),
       }
     );
-  };
-
-  // 모달 핸들러들
-  const handleLoginConfirm = () => {
-    setShowLoginModal(false);
-    router.push("/login");
-  };
-
-  const handleCartConfirm = () => {
-    setShowCartModal(false);
-    router.push("/cart");
   };
 
   return (
@@ -212,21 +267,25 @@ export default function ProductDetailClient({ product }: Props) {
 
               {/* Desktop Buttons (Hidden on mobile) */}
               <div className="hidden lg:flex gap-3 pt-4">
-                <button
+                <Button
                   onClick={handleAddToCart}
                   disabled={product.quantity === 0}
-                  className="flex-1 border border-gray-200 bg-white text-slate-800 font-bold py-4 rounded-[18px] hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm text-lg"
+                  variant="outline"
+                  size="lg"
+                  className="flex-1 text-lg py-6 h-auto"
                 >
-                  <ShoppingCart className="w-5 h-5" />
+                  <ShoppingCart className="w-5 h-5 mr-2" />
                   장바구니
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleBuyNow}
                   disabled={product.quantity === 0}
-                  className="flex-1 bg-slate-900 text-white font-bold py-4 rounded-[18px] hover:bg-slate-800 shadow-slate-200 hover:shadow-lg hover:shadow-slate-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                  variant="primary"
+                  size="lg"
+                  className="flex-1 text-lg py-6 h-auto"
                 >
                   바로 구매하기
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -235,80 +294,26 @@ export default function ProductDetailClient({ product }: Props) {
         {/* Mobile Sticky Bottom Bar */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={handleAddToCart}
               disabled={product.quantity === 0}
-              className="flex-1 border border-gray-200 bg-white text-slate-800 font-bold py-3.5 rounded-[16px] active:bg-gray-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-base"
+              variant="outline"
+              className="flex-1 h-14 text-base"
             >
-              <ShoppingCart className="w-5 h-5" />
+              <ShoppingCart className="w-5 h-5 mr-2" />
               장바구니
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleBuyNow}
               disabled={product.quantity === 0}
-              className="flex-[2] bg-slate-900 text-white font-bold py-3.5 rounded-[16px] active:bg-slate-800 transition-all disabled:opacity-50 text-base shadow-slate-100"
+              variant="primary"
+              className="flex-[2] h-14 text-base shadow-slate-100"
             >
               구매하기
-            </button>
+            </Button>
           </div>
         </div>
       </div>
-
-      {/* Login Modal */}
-      <Modal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        title="로그인 필요"
-        footer={
-          <>
-            <button
-              onClick={() => setShowLoginModal(false)}
-              className="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-50 transition-colors"
-            >
-              취소
-            </button>
-            <button
-              onClick={handleLoginConfirm}
-              className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200"
-            >
-              로그인하기
-            </button>
-          </>
-        }
-      >
-        <p>로그인이 필요한 서비스입니다.</p>
-        <p className="mt-1 text-sm text-slate-400">
-          로그인 페이지로 이동하시겠습니까?
-        </p>
-      </Modal>
-
-      {/* Cart Modal */}
-      <Modal
-        isOpen={showCartModal}
-        onClose={() => setShowCartModal(false)}
-        title="장바구니 담기 완료"
-        footer={
-          <>
-            <button
-              onClick={() => setShowCartModal(false)}
-              className="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-50 transition-colors"
-            >
-              계속 쇼핑
-            </button>
-            <button
-              onClick={handleCartConfirm}
-              className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200"
-            >
-              장바구니로 이동
-            </button>
-          </>
-        }
-      >
-        <p>상품이 장바구니에 담겼습니다.</p>
-        <p className="mt-1 text-sm text-slate-400">
-          장바구니로 이동하시겠습니까?
-        </p>
-      </Modal>
     </>
   );
 }

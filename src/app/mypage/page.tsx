@@ -14,7 +14,7 @@ export default function MyPage() {
 
   const { data: ordersData, isLoading } = useQuery({
     queryKey: ["orders", 0],
-    queryFn: () => orderApi.getOrders({ page: 0, size: 5 }),
+    queryFn: () => orderApi.getOrders({ page: 0, size: 5, sort: ["string"] }),
   });
 
   if (!me) return <div className="py-20 text-center">로그인이 필요합니다.</div>;

@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://dev-api.lunatalk.co.kr";
 
@@ -41,9 +43,23 @@ export async function fetchExtended<T>(
     });
 
     if (!response.ok) {
-      if (response.status === 401) {
+      if (response.status === 401 || response.status === 403) {
         if (typeof window !== "undefined") {
-          // 로그아웃 처리 등
+          // 클라이언트 사이드: 로컬 스토리지 삭제 및 리로드 (또는 로그인 페이지로 이동)
+          // Zustand 스토어 외부에서 상태 변경은 까다로울 수 있으므로 직접 스토리지 제어
+          localStorage.removeItem("accessToken");
+
+          // useAuthStore의 상태도 초기화해주면 좋지만, 여기서는 fetch 함수 내부이므로
+          // 간단히 로컬스토리지 정리 후 새로고침하여 상태 초기화를 유도합니다.
+          // 무한 루프 방지를 위해 현재 페이지가 login이 아닐 때만 리로드 또는 이동
+          if (!window.location.pathname.includes("/login")) {
+            window.location.href = "/login";
+          }
+        } else {
+          // 서버 사이드: redirect 함수 사용 가능 (Server Components)
+          // 단, 렌더링 도중이 아닌 데이터 페칭 중 redirect는 에러로 취급될 수 있으나
+          // Next.js에서 내부적으로 throw Error('NEXT_REDIRECT')를 사용하므로 동작함.
+          redirect("/login");
         }
       }
 
