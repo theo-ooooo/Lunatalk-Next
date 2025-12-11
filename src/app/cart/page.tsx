@@ -1,198 +1,31 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { cartApi, orderApi } from "@/services/api";
+import Link from "next/link";
 import { formatPrice, getImageUrl } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useModalStore } from "@/store/useModalStore";
 import { Button } from "@/components/ui/Button";
 import { SummaryRow } from "@/components/ui/SummaryRow";
+import { useCart } from "@/hooks/cart/useCart";
 
 export default function CartPage() {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
-  const { openModal, closeModal } = useModalStore();
-
-  const [mounted, setMounted] = useState(false);
-  const [isOrdering, setIsOrdering] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // 로그인 유도 모달 열기
-  const showLoginModal = () => {
-    openModal({
-      title: "로그인 필요",
-      content: (
-        <>
-          <p>장바구니는 로그인이 필요한 서비스입니다.</p>
-          <p className="mt-1 text-sm text-slate-400">
-            로그인 페이지로 이동하시겠습니까?
-          </p>
-        </>
-      ),
-      footer: (
-        <>
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={() => {
-              closeModal();
-              router.push("/");
-            }}
-          >
-            취소
-          </Button>
-          <Button
-            variant="primary"
-            className="flex-1"
-            onClick={() => {
-              closeModal();
-              router.push("/login");
-            }}
-          >
-            로그인하기
-          </Button>
-        </>
-      ),
-    });
-  };
-
-  // 인증 체크
-  useEffect(() => {
-    if (mounted && !isAuthenticated) {
-      showLoginModal();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, isAuthenticated]);
-
-  // 선택된 장바구니 아이템 ID들
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
-
-  const { data: rawCartItems, isLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: cartApi.getCartItems,
-    enabled: isAuthenticated, // 로그인 상태일 때만 쿼리 실행
-  });
-
-  const cartItems = Array.isArray(rawCartItems) ? rawCartItems : [];
-
-  const deleteMutation = useMutation({
-    mutationFn: cartApi.deleteCartItem,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      closeModal();
-    },
-  });
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedIds(cartItems.map((item) => item.cartItemId));
-    } else {
-      setSelectedIds([]);
-    }
-  };
-
-  const handleSelect = (id: number, checked: boolean) => {
-    if (checked) {
-      setSelectedIds((prev) => [...prev, id]);
-    } else {
-      setSelectedIds((prev) => prev.filter((i) => i !== id));
-    }
-  };
-
-  const handleDelete = (id: number) => {
-    openModal({
-      title: "상품 삭제",
-      content: <p>정말 삭제하시겠습니까?</p>,
-      footer: (
-        <>
-          <Button variant="outline" className="flex-1" onClick={closeModal}>
-            취소
-          </Button>
-          <Button
-            variant="danger"
-            className="flex-1"
-            onClick={() => deleteMutation.mutate(id)}
-          >
-            삭제
-          </Button>
-        </>
-      ),
-    });
-  };
-
-  const handleOrder = async () => {
-    if (selectedIds.length === 0) {
-      openModal({
-        title: "알림",
-        content: <p>주문할 상품을 선택해주세요.</p>,
-        footer: (
-          <Button variant="primary" fullWidth onClick={closeModal}>
-            확인
-          </Button>
-        ),
-      });
-      return;
-    }
-
-    // 주문 생성 로직
-    setIsOrdering(true);
-    try {
-      const itemsToOrder = cartItems
-        .filter((item) => selectedIds.includes(item.cartItemId))
-        .map((item) => ({
-          productId: item.product.productId,
-          quantity: item.quantity,
-          optionSnapshot: {
-            color: item.product.colors?.[0] || "DEFAULT", // 옵션이 선택되었다면 해당 값 사용해야 함. 현재는 임시 처리
-          },
-        }));
-
-      const response = await orderApi.createOrder({
-        products: itemsToOrder,
-      });
-
-      // 장바구니에서 주문한 아이템 제거 (선택적: 주문 완료 후 제거할지, 여기서 제거할지 결정 필요. 보통 주문 성공하면 제거)
-      // 여기서는 낙관적으로 제거하지 않고, 주문 완료 시점에 서버에서 처리되거나,
-      // 주문 성공 후 장바구니 다시 조회하면 빠져있을 것으로 기대 (백엔드 로직에 따라 다름)
-
-      if (response && response.orderNumber) {
-        // 주문 생성 성공 시 상세(배송정보 입력) 페이지로 이동
-        router.push(`/orders/update/${response.orderNumber}`);
-      } else {
-        throw new Error("주문 번호를 받지 못했습니다.");
-      }
-    } catch (error) {
-      console.error("Order creation failed:", error);
-      openModal({
-        title: "주문 실패",
-        content: <p>주문 생성 중 오류가 발생했습니다. 다시 시도해주세요.</p>,
-        footer: (
-          <Button variant="primary" fullWidth onClick={closeModal}>
-            확인
-          </Button>
-        ),
-      });
-    } finally {
-      setIsOrdering(false);
-    }
-  };
+  const {
+    cartItems,
+    isLoading,
+    isAuthenticated,
+    mounted,
+    selectedIds,
+    isOrdering,
+    totalAmount,
+    handleSelectAll,
+    handleSelect,
+    handleDelete,
+    handleOrder,
+  } = useCart();
 
   if (!mounted) return null;
 
   if (isLoading && isAuthenticated)
     return <div className="py-20 text-center">장바구니를 불러오는 중...</div>;
-
-  const totalAmount = cartItems
-    .filter((item) => selectedIds.includes(item.cartItemId))
-    .reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
   return (
     <>
