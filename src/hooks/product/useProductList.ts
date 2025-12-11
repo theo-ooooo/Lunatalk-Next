@@ -30,7 +30,6 @@ export function useProductList() {
     queryKey: ["products", selectedCategory, searchQuery],
     queryFn: () =>
       productApi.getProducts({
-        categoryId: selectedCategory || undefined,
         productName: searchQuery || undefined,
         page: 0,
         size: 20,
@@ -55,4 +54,3 @@ export function useProductList() {
     searchQuery,
   };
 }
-
