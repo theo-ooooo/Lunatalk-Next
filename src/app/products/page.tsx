@@ -25,6 +25,7 @@ export default async function ProductsPage({ searchParams }: Props) {
   const page = Number(params.page) || 0;
   const size = 12;
   const categoryId = params.categoryId ? Number(params.categoryId) : undefined;
+  const search = params.search;
 
   // 병렬 데이터 페칭
   const [categories, productsData] = await Promise.all([
@@ -33,6 +34,7 @@ export default async function ProductsPage({ searchParams }: Props) {
       .getProducts({
         page,
         size,
+        productName: search, // API 파라미터 변경 대응
       })
       .catch(() => ({
         content: [],
@@ -47,18 +49,28 @@ export default async function ProductsPage({ searchParams }: Props) {
   let products = productsData?.content || [];
   let totalPages = productsData?.totalPages || 0;
 
-  // 만약 categoryId가 있다면 해당 카테고리 상품 API를 호출해서 교체
-  if (categoryId) {
+  // 만약 categoryId가 있다면 해당 카테고리 상품 API를 호출해서 교체 (검색어가 없을 때만)
+  if (categoryId && !search) {
     try {
       const categoryData = await categoryApi.getCategoryProducts(categoryId);
       if (categoryData && categoryData.products) {
         products = categoryData.products;
-        totalPages = 1;
+        totalPages = 1; // 카테고리별 상품은 페이징 정보가 없을 수 있음
       }
     } catch (e) {
       console.error("Failed to fetch category products:", e);
       products = [];
     }
+  }
+
+  // 검색 결과 타이틀
+  let pageTitle = "ALL PRODUCTS";
+  if (search) {
+    pageTitle = `"${search}" 검색 결과`;
+  } else if (categoryId) {
+    pageTitle =
+      categoryList.find((c) => c.categoryId === categoryId)?.categoryName ||
+      "CATEGORY";
   }
 
   return (
@@ -70,12 +82,7 @@ export default async function ProductsPage({ searchParams }: Props) {
             HOME
           </Link>
           <ChevronRight className="w-3 h-3 mx-2 text-slate-300" />
-          <span className="text-slate-800">
-            {categoryId
-              ? categoryList.find((c) => c.categoryId === categoryId)
-                  ?.categoryName
-              : "ALL PRODUCTS"}
-          </span>
+          <span className="text-slate-800">{pageTitle}</span>
         </div>
 
         <div className="flex flex-col md:flex-row gap-8 md:gap-12">
@@ -85,14 +92,14 @@ export default async function ProductsPage({ searchParams }: Props) {
               <h3 className="font-bold text-xl mb-6 text-slate-900 hidden md:block px-2">
                 Category
               </h3>
-              
+
               {/* Mobile: Horizontal Scrollable List */}
               <div className="md:hidden overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar flex gap-2 snap-x">
                 <Link
                   href="/products"
                   className={clsx(
                     "flex-shrink-0 snap-start px-4 py-2 rounded-full text-sm font-medium transition-all border",
-                    !categoryId
+                    !categoryId && !search
                       ? "bg-slate-900 text-white border-slate-900"
                       : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"
                   )}
@@ -124,7 +131,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                     href="/products"
                     className={clsx(
                       "block px-4 py-2.5 rounded-lg transition-all text-[15px] font-medium",
-                      !categoryId
+                      !categoryId && !search
                         ? "bg-slate-50 text-slate-900 font-bold"
                         : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                     )}
@@ -157,13 +164,11 @@ export default async function ProductsPage({ searchParams }: Props) {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
               <h1 className="text-xl md:text-2xl font-bold text-slate-900">
-                 {categoryId
-                    ? categoryList.find((c) => c.categoryId === categoryId)
-                        ?.categoryName
-                    : "전체 상품"}
+                {pageTitle}
               </h1>
               <span className="text-slate-400 text-sm font-medium">
-                <strong className="text-slate-900">{products.length}</strong> items
+                <strong className="text-slate-900">{products.length}</strong>{" "}
+                items
               </span>
             </div>
 
@@ -176,7 +181,9 @@ export default async function ProductsPage({ searchParams }: Props) {
             ) : (
               <div className="py-40 text-center">
                 <p className="text-slate-400 font-medium mb-4">
-                  등록된 상품이 없습니다.
+                  {search
+                    ? `"${search}"에 대한 검색 결과가 없습니다.`
+                    : "등록된 상품이 없습니다."}
                 </p>
                 <Link
                   href="/"
@@ -191,7 +198,9 @@ export default async function ProductsPage({ searchParams }: Props) {
             {!categoryId && totalPages > 1 && (
               <div className="flex justify-center items-center gap-2 mt-16">
                 <Link
-                  href={`/products?page=${Math.max(0, page - 1)}`}
+                  href={`/products?page=${Math.max(0, page - 1)}${
+                    search ? `&search=${search}` : ""
+                  }`}
                   className={clsx(
                     "p-2 rounded-full border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all",
                     page === 0 && "pointer-events-none opacity-50"
@@ -200,10 +209,14 @@ export default async function ProductsPage({ searchParams }: Props) {
                   <ChevronLeft className="w-5 h-5" />
                 </Link>
                 <span className="text-sm font-bold text-slate-900 px-4">
-                  {page + 1} <span className="text-slate-300 font-normal">/</span> {totalPages}
+                  {page + 1}{" "}
+                  <span className="text-slate-300 font-normal">/</span>{" "}
+                  {totalPages}
                 </span>
                 <Link
-                  href={`/products?page=${Math.min(totalPages - 1, page + 1)}`}
+                  href={`/products?page=${Math.min(totalPages - 1, page + 1)}${
+                    search ? `&search=${search}` : ""
+                  }`}
                   className={clsx(
                     "p-2 rounded-full border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all",
                     page >= totalPages - 1 && "pointer-events-none opacity-50"

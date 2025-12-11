@@ -8,6 +8,7 @@ import {
   Member,
   Order,
   OrderCreateRequest,
+  OrderCreateResponse,
   PageProductFindResponse,
   ProductFindResponse,
   CartItem,
@@ -15,6 +16,7 @@ import {
   PaymentConfirmRequest,
   PaymentConfirmResponse,
   PageOrderListResponse,
+  OrderCreateDeliveryRequest,
 } from "@/types/api";
 
 // 상품 관련
@@ -23,35 +25,47 @@ export const productApi = {
     page: number;
     size: number;
     sort?: string[];
+    productName?: string;
   }) => {
     // fetchExtended가 T 타입을 반환하므로 바로 return
     const data = await fetchExtended<PageProductFindResponse>("/products", {
       params: { ...params } as any,
+      cache: "no-store", // 상품 목록/검색은 실시간성이 중요하므로 캐시 끔
     });
     return data;
   },
   getProduct: async (id: number) => {
-    return fetchExtended<ProductFindResponse>(`/products/${id}`);
+    return fetchExtended<ProductFindResponse>(`/products/${id}`, {
+      cache: "no-store", // 상세 페이지도 재고 등 실시간 정보 필요
+    });
   },
 };
 
 // 카테고리 관련
 export const categoryApi = {
   getCategories: async () => {
-    return fetchExtended<Category[]>("/categories");
+    return fetchExtended<Category[]>("/categories", {
+      next: { revalidate: 3600 }, // 카테고리는 자주 안 바뀌니 1시간 캐시
+    });
   },
   getCategoryProducts: async (id: number) => {
-    return fetchExtended<any>(`/categories/${id}/products`);
+    return fetchExtended<any>(`/categories/${id}/products`, {
+      cache: "no-store",
+    });
   },
 };
 
 // 기획전 관련
 export const exhibitionApi = {
   getExhibitions: async () => {
-    return fetchExtended<Exhibition[]>("/exhibitions");
+    return fetchExtended<Exhibition[]>("/exhibitions", {
+      cache: "no-store",
+    });
   },
   getExhibition: async (id: number) => {
-    return fetchExtended<Exhibition>(`/exhibitions/${id}`);
+    return fetchExtended<Exhibition>(`/exhibitions/${id}`, {
+      cache: "no-store",
+    });
   },
 };
 
@@ -95,7 +109,7 @@ export const cartApi = {
 // 주문 관련
 export const orderApi = {
   createOrder: async (data: OrderCreateRequest) => {
-    return fetchExtended("/orders", {
+    return fetchExtended<OrderCreateResponse>("/orders", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -106,11 +120,23 @@ export const orderApi = {
     });
   },
   getOrder: async (orderNumber: string) => {
-    return fetchExtended<Order>(`/orders/${orderNumber}`);
+    return fetchExtended<Order>(`/orders/${orderNumber}`, {
+      cache: "no-store", // 주문 상세 정보는 실시간 확인 필요
+    });
   },
   confirmPayment: async (data: PaymentConfirmRequest) => {
     return fetchExtended<PaymentConfirmResponse>("/payments/confirm", {
       method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+  // 배송지 등록
+  registerDelivery: async (
+    orderNumber: string,
+    data: OrderCreateDeliveryRequest
+  ) => {
+    return fetchExtended(`/orders/${orderNumber}/delivery`, {
+      method: "PATCH",
       body: JSON.stringify(data),
     });
   },

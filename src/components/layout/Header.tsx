@@ -73,13 +73,18 @@ export default function Header() {
 
         {/* Right Icons */}
         <div className="flex items-center gap-2 md:gap-4 text-slate-800">
-          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+          <Link 
+            href="/search"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="검색"
+          >
             <Search className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
-          </button>
+          </Link>
 
           <Link
             href="/cart"
             className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+            aria-label="장바구니"
           >
             <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
           </Link>
@@ -89,6 +94,7 @@ export default function Header() {
               <Link
                 href="/mypage"
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="마이페이지"
               >
                 <User className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
               </Link>
@@ -96,6 +102,7 @@ export default function Header() {
                 onClick={handleLogout}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors text-slate-500"
                 title="로그아웃"
+                aria-label="로그아웃"
               >
                 <LogOut className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
               </button>
@@ -113,6 +120,7 @@ export default function Header() {
           <button
             className="md:hidden p-2 hover:bg-gray-100 rounded-full ml-1"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="메뉴 열기"
           >
             <Menu className="w-6 h-6 stroke-[1.5]" />
           </button>

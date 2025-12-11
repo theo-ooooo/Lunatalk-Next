@@ -74,6 +74,9 @@ export interface Product {
 
 export interface ProductFindResponse extends Product {}
 
+export interface PageProductFindResponse extends PageResponse<ProductFindResponse> {}
+export interface PageOrderListResponse extends PageResponse<Order> {}
+
 // 기획전
 export interface Exhibition {
   exhibitionId: number;
@@ -183,13 +186,19 @@ export interface CreateCartItemRequest {
 }
 
 export interface OrderCreateRequest {
-  "구매할 상품들": {
-    "상품 ID": number;
-    "상품 갯수": number;
-    "상품 옵션"?: {
+  products: {
+    productId: number;
+    quantity: number;
+    optionSnapshot?: {
       color: string;
     };
   }[];
+}
+
+export interface OrderCreateResponse {
+  orderId: number;
+  orderNumber: string;
+  // 필요한 경우 추가 필드 정의
 }
 
 export interface OrderCreateDeliveryRequest {
@@ -200,4 +209,3 @@ export interface OrderCreateDeliveryRequest {
   name: string;
   message?: string;
 }
-

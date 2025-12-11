@@ -91,7 +91,7 @@ export default async function ProductDetailPage({ params }: Props) {
                 {contentImages.map((img) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    key={img.id}
+                    key={img.imageKey}
                     src={getImageUrl(img.imageUrl)}
                     alt="상품 상세 이미지"
                     className="w-full h-auto block max-w-4xl"
