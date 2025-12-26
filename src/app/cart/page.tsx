@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/Button";
 import { SummaryRow } from "@/components/ui/SummaryRow";
 import { useCart } from "@/hooks/cart/useCart";
 import { CartItem } from "@/components/cart/CartItem";
+import { Loading } from "@/components/common/Loading";
+import { ShoppingCart, CreditCard } from "lucide-react";
 
 export default function CartPage() {
   const {
     cartItems,
     isLoading,
     isAuthenticated,
-    mounted,
     selectedIds,
     isOrdering,
     totalAmount,
@@ -22,69 +23,106 @@ export default function CartPage() {
     handleOrder,
   } = useCart();
 
-  if (!mounted) return null;
-
   if (isLoading && isAuthenticated)
-    return <div className="py-20 text-center">장바구니를 불러오는 중...</div>;
+    return <Loading message="장바구니를 불러오는 중..." fullScreen={false} />;
 
   return (
-    <>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-8">장바구니</h1>
+    <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+        {/* Header */}
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
+            장바구니
+          </h1>
+        </div>
 
         {isAuthenticated ? (
           cartItems.length > 0 ? (
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
               {/* Cart List */}
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-4 pb-4 border-b">
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                    checked={
-                      cartItems.length > 0 &&
-                      selectedIds.length === cartItems.length
-                    }
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                  />
-                  <span className="font-medium">
-                    전체 선택 ({selectedIds.length}/{cartItems.length})
-                  </span>
-                </div>
+              <div className="lg:col-span-3 space-y-4 sm:space-y-6">
+                <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-5">
+                  <div className="flex items-center gap-2 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-200">
+                    <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 text-slate-900 flex-shrink-0" />
+                    <h2 className="text-base sm:text-lg lg:text-base font-bold text-slate-900">
+                      담은 상품
+                    </h2>
+                    <span className="ml-auto text-xs sm:text-sm lg:text-xs text-slate-500">
+                      총 {cartItems.length}개
+                    </span>
+                  </div>
 
-                <div className="space-y-4">
-                  {cartItems.map((item) => (
-                    <CartItem
-                      key={item.cartItemId}
-                      item={item}
-                      isSelected={selectedIds.includes(item.cartItemId)}
-                      onSelect={(checked) =>
-                        handleSelect(item.cartItemId, checked)
+                  {/* 전체 선택 */}
+                  <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 sm:w-5 sm:h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                      checked={
+                        cartItems.length > 0 &&
+                        selectedIds.length === cartItems.length
                       }
-                      onDelete={() => handleDelete(item.cartItemId)}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
                     />
-                  ))}
+                    <span className="text-sm sm:text-base lg:text-sm font-medium text-slate-700">
+                      전체 선택 ({selectedIds.length}/{cartItems.length})
+                    </span>
+                  </div>
+
+                  <div className="space-y-3 sm:space-y-4">
+                    {cartItems.map((item) => (
+                      <CartItem
+                        key={item.cartItemId}
+                        item={item}
+                        isSelected={selectedIds.includes(item.cartItemId)}
+                        onSelect={(checked) =>
+                          handleSelect(item.cartItemId, checked)
+                        }
+                        onDelete={() => handleDelete(item.cartItemId)}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 
               {/* Order Summary */}
-              <div className="w-full lg:w-80 flex-shrink-0">
-                <div className="bg-slate-50 p-6 rounded-xl sticky top-24">
-                  <h3 className="font-bold text-lg mb-4">결제 예정 금액</h3>
-                  <div className="space-y-2 mb-6">
-                    <SummaryRow
-                      label="총 상품금액"
-                      value={`${formatPrice(totalAmount)}원`}
-                    />
-                    <SummaryRow label="배송비" value="0원" />
+              <div className="lg:col-span-2">
+                <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-5 sticky top-24">
+                  <div className="flex items-center gap-2 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-200">
+                    <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 text-slate-900 flex-shrink-0" />
+                    <h2 className="text-base sm:text-lg lg:text-base font-bold text-slate-900">
+                      결제 예정 금액
+                    </h2>
                   </div>
-                  <div className="border-t pt-4 mb-6">
-                    <SummaryRow
-                      label="총 결제금액"
-                      value={`${formatPrice(totalAmount)}원`}
-                      isTotal
-                    />
+
+                  <div className="space-y-3 sm:space-y-4 lg:space-y-3">
+                    <div className="flex justify-between items-center py-1.5 sm:py-2 lg:py-1.5">
+                      <span className="text-sm sm:text-base lg:text-sm text-slate-600">
+                        상품금액
+                      </span>
+                      <span className="text-sm sm:text-base lg:text-sm font-medium text-slate-900">
+                        {formatPrice(totalAmount)}원
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center py-1.5 sm:py-2 lg:py-1.5">
+                      <span className="text-sm sm:text-base lg:text-sm text-slate-600">
+                        배송비
+                      </span>
+                      <span className="text-sm sm:text-base lg:text-sm font-medium text-slate-900">
+                        0원
+                      </span>
+                    </div>
+                    <div className="border-t-2 border-slate-200 pt-3 sm:pt-4 lg:pt-3 mt-3 sm:mt-4 lg:mt-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-base sm:text-lg lg:text-base font-bold text-slate-900">
+                          총 결제금액
+                        </span>
+                        <span className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
+                          {formatPrice(totalAmount)}원
+                        </span>
+                      </div>
+                    </div>
                   </div>
+
                   <Button
                     variant="primary"
                     fullWidth
@@ -92,6 +130,7 @@ export default function CartPage() {
                     onClick={handleOrder}
                     disabled={selectedIds.length === 0 || isOrdering}
                     isLoading={isOrdering}
+                    className="mt-6 sm:mt-8 text-sm sm:text-base lg:text-sm"
                   >
                     {selectedIds.length}개 상품 주문하기
                   </Button>
@@ -99,21 +138,31 @@ export default function CartPage() {
               </div>
             </div>
           ) : (
-            <div className="py-32 text-center bg-slate-50 rounded-xl">
-              <p className="text-slate-500 mb-4">
-                장바구니에 담긴 상품이 없습니다.
-              </p>
-              <Link href="/products" className="inline-block">
-                <Button variant="primary">쇼핑하러 가기</Button>
-              </Link>
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
+              <div className="py-20 text-center">
+                <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+                <p className="text-lg font-medium text-slate-700 mb-2">
+                  장바구니에 담긴 상품이 없습니다.
+                </p>
+                <p className="text-sm text-slate-500 mb-6">
+                  원하는 상품을 장바구니에 담아보세요.
+                </p>
+                <Link href="/products">
+                  <Button variant="primary" size="lg">
+                    쇼핑하러 가기
+                  </Button>
+                </Link>
+              </div>
             </div>
           )
         ) : (
-          <div className="py-20 text-center">
-            {/* 비로그인 상태일 때는 내용을 숨기거나 간단한 안내만 표시 (모달이 뜸) */}
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
+            <div className="py-20 text-center">
+              {/* 비로그인 상태일 때는 내용을 숨기거나 간단한 안내만 표시 (모달이 뜸) */}
+            </div>
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
