@@ -64,16 +64,13 @@ export async function fetchExtended<T>(
       }
 
       // 에러 내용을 텍스트로 먼저 읽음 (JSON이 아닐 수도 있으므로)
-      const errorText = await response.text().catch(() => "");
-      let errorBody;
-      try {
-        errorBody = JSON.parse(errorText);
-      } catch {
-        errorBody = { message: errorText || `HTTP Error ${response.status}` };
-      }
+      const responseBody = await response.json();
+      let errorBody = responseBody;
 
       console.error(`[API Error] ${url} (${response.status})`, errorBody);
-      throw new Error(errorBody.message || `API 요청 실패: ${response.status}`);
+      throw new Error(
+        errorBody.data.message || `API 요청 실패: ${response.status}`
+      );
     }
 
     if (response.status === 204) {
