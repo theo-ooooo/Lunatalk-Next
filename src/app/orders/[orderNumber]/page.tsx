@@ -1,207 +1,201 @@
 "use client";
 
-import { orderApi } from "@/services/api";
-import { formatPrice } from "@/lib/utils";
+import { Suspense } from "react";
+import {
+  formatPrice,
+  getOrderStatusLabel,
+  getOrderStatusColor,
+} from "@/lib/utils";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { ChevronLeft, Truck, CreditCard, Loader2 } from "lucide-react";
+import {
+  ChevronLeft,
+  CreditCard,
+  Package,
+  MessageSquare,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { useQuery } from "@tanstack/react-query";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useEffect, useState } from "react";
-import { InfoRow } from "@/components/ui/InfoRow";
-import { SummaryRow } from "@/components/ui/SummaryRow";
+import { DeliveryInfo } from "@/components/order/DeliveryInfo";
+import { OrderItems } from "@/components/order/OrderItems";
+import { useOrderDetail } from "@/hooks/order/useOrderDetail";
+import { Loading } from "@/components/common/Loading";
+import { QueryErrorBoundary } from "@/components/common/QueryErrorBoundary";
 
-export default function OrderDetailPage() {
-  const params = useParams();
-  const orderNumber = params?.orderNumber as string;
-  const { isAuthenticated } = useAuthStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const {
-    data: order,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["order", orderNumber],
-    queryFn: () => orderApi.getOrder(orderNumber),
-    enabled: !!orderNumber && isAuthenticated,
-  });
-
-  if (!mounted) return null;
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
-      </div>
-    );
-  }
-
-  if (isError || !order) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <p className="text-slate-500 font-medium">
-          주문 정보를 불러올 수 없습니다.
-        </p>
-        <Link href="/">
-          <Button>홈으로 돌아가기</Button>
-        </Link>
-      </div>
-    );
-  }
-
-  // 배송지 정보가 배열로 온다면 첫 번째 것을 사용 (가정)
-  const delivery = order.deliveries?.[0];
+function OrderDetailContent() {
+  const { order, delivery } = useOrderDetail();
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
-      <div className="container mx-auto px-4 max-w-3xl">
+    <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
+      <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
         {/* Header */}
-        <div className="mb-8 flex items-center gap-4">
+        <div className="mb-4 sm:mb-6 flex items-center gap-2 sm:gap-4">
           <Link
             href="/mypage"
-            className="p-2 hover:bg-white rounded-full transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-white rounded-lg transition-colors"
           >
-            <ChevronLeft className="w-6 h-6 text-slate-600" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 text-slate-600" />
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">주문 상세</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
+            주문 상세
+          </h1>
         </div>
 
-        {/* Order Status Card */}
-        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6 mb-6">
-            <div>
-              <span className="text-sm font-bold text-slate-500 mb-1 block">
-                주문번호 {order.orderNumber}
-              </span>
-              <div className="flex items-center gap-3">
-                <h2 className="text-2xl font-bold text-slate-900">
-                  {order.status === "ORDERED"
-                    ? "주문 완료"
-                    : order.status === "PAYMENT_COMPLETED"
-                    ? "결제 완료"
-                    : order.status}
-                </h2>
-                <span className="text-sm text-slate-400 font-medium">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </span>
+        {/* Order Status Header */}
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 mb-4 sm:mb-6 overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-4 sm:px-6 py-4 sm:py-5">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="text-xs sm:text-sm text-slate-300 mb-2">
+                  주문번호:{" "}
+                  <span className="font-mono break-all">
+                    {order.orderNumber}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                  <span
+                    className={`inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold border ${getOrderStatusColor(
+                      order.status
+                    )}`}
+                  >
+                    {getOrderStatusLabel(order.status)}
+                  </span>
+                  <span className="text-xs sm:text-sm text-slate-300">
+                    {new Date(order.createdAt).toLocaleDateString("ko-KR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                문의하기
-              </Button>
-              {order.status === "ORDERED" && (
-                // 취소 기능은 아직 API가 없으므로 버튼만 둠 (기능 없음)
+              <div className="flex gap-2 flex-shrink-0">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 text-xs sm:text-sm px-3 sm:px-4"
                 >
-                  주문 취소
+                  <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">문의하기</span>
+                  <span className="sm:hidden">문의</span>
                 </Button>
-              )}
+                {order.status === "ORDERED" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20 text-xs sm:text-sm px-3 sm:px-4"
+                  >
+                    <X className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">주문 취소</span>
+                    <span className="sm:hidden">취소</span>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Order Items */}
-          <div className="space-y-6">
-            {order.orderItems.map((item, idx) => (
-              <div key={idx} className="flex gap-4">
-                {/* 이미지가 OrderItem에 없어서 상품명으로 대체하거나 해야 함. API 수정 전까진 Placeholder 혹은 로직 수정 필요 */}
-                <div className="w-20 h-20 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="https://placehold.co/200x200/f1f5f9/94a3b8?text=Product"
-                    alt={item.productName}
-                    className="w-full h-full object-cover"
-                  />
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
+          {/* Left Column - Order Items & Payment */}
+          <div className="lg:col-span-3 space-y-4 sm:space-y-6">
+            {/* Order Items */}
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-5">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6 lg:mb-4 pb-3 sm:pb-4 lg:pb-3 border-b border-slate-200">
+                <Package className="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 text-slate-900 flex-shrink-0" />
+                <h2 className="text-base sm:text-lg lg:text-base font-bold text-slate-900">
+                  주문 상품
+                </h2>
+                <span className="ml-auto text-xs sm:text-sm lg:text-xs text-slate-500">
+                  총 {order.orderItems.length}개
+                </span>
+              </div>
+              <OrderItems items={order.orderItems} />
+            </div>
+
+            {/* Payment Info */}
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 lg:p-5">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6 lg:mb-4 pb-3 sm:pb-4 lg:pb-3 border-b border-slate-200">
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 lg:w-4 lg:h-4 text-slate-900 flex-shrink-0" />
+                <h2 className="text-base sm:text-lg lg:text-base font-bold text-slate-900">
+                  결제 정보
+                </h2>
+              </div>
+
+              <div className="space-y-3 sm:space-y-4 lg:space-y-3">
+                <div className="flex justify-between items-center py-1.5 sm:py-2 lg:py-1.5">
+                  <span className="text-sm sm:text-base lg:text-sm text-slate-600">
+                    상품금액
+                  </span>
+                  <span className="text-sm sm:text-base lg:text-sm font-medium text-slate-900">
+                    {formatPrice(order.totalPrice)}원
+                  </span>
                 </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="text-xs font-bold text-slate-400">
-                      LUNATALK
+                <div className="flex justify-between items-center py-1.5 sm:py-2 lg:py-1.5">
+                  <span className="text-sm sm:text-base lg:text-sm text-slate-600">
+                    배송비
+                  </span>
+                  <span className="text-sm sm:text-base lg:text-sm font-medium text-slate-900">
+                    0원
+                  </span>
+                </div>
+                <div className="border-t-2 border-slate-200 pt-3 sm:pt-4 lg:pt-3 mt-3 sm:mt-4 lg:mt-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-base sm:text-lg lg:text-base font-bold text-slate-900">
+                      총 결제금액
                     </span>
-                  </div>
-                  <h3 className="font-bold text-slate-900 mb-1">
-                    {item.productName}
-                  </h3>
-                  <div className="text-sm text-slate-500 mb-2">
-                    {item.color && (
-                      <span className="mr-2">옵션: {item.color}</span>
-                    )}
-                    <span>{item.quantity}개</span>
-                  </div>
-                  <div className="font-bold text-slate-900">
-                    {formatPrice(item.price * item.quantity)}원
+                    <span className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
+                      {formatPrice(order.totalPrice)}원
+                    </span>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Shipping Info */}
-        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100 mb-6">
-          <div className="flex items-center gap-2 mb-6">
-            <Truck className="w-5 h-5 text-slate-900" />
-            <h3 className="font-bold text-lg text-slate-900">배송 정보</h3>
-          </div>
-
-          {delivery ? (
-            <div className="space-y-4 text-sm md:text-base">
-              <InfoRow label="받는 분" value={delivery.receiverName} />
-              <InfoRow label="연락처" value={delivery.receiverPhone} />
-              <InfoRow label="주소">
-                <p>({delivery.zipcode})</p>
-                <p>{delivery.addressLine1}</p>
-                <p>{delivery.addressLine2}</p>
-              </InfoRow>
-              {delivery.message && (
-                <InfoRow label="배송메모" value={delivery.message} />
-              )}
-            </div>
-          ) : (
-            <p className="text-slate-500">배송 정보가 없습니다.</p>
-          )}
-        </div>
-
-        {/* Payment Info */}
-        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100">
-          <div className="flex items-center gap-2 mb-6">
-            <CreditCard className="w-5 h-5 text-slate-900" />
-            <h3 className="font-bold text-lg text-slate-900">결제 정보</h3>
-          </div>
-
-          <div className="space-y-3">
-            <SummaryRow
-              label="총 상품금액"
-              value={`${formatPrice(order.totalPrice)}원`}
-            />
-            <SummaryRow label="배송비" value="0원" />
-            <div className="border-t border-slate-100 my-4 pt-4">
-              <SummaryRow
-                label="총 결제금액"
-                value={`${formatPrice(order.totalPrice)}원`}
-                isTotal
-              />
             </div>
           </div>
+
+          {/* Right Column - Delivery Info */}
+          <div className="lg:col-span-2">
+            {delivery ? (
+              <DeliveryInfo delivery={delivery} orderStatus={order.status} />
+            ) : (
+              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6">
+                <p className="text-sm sm:text-base text-slate-500 text-center py-6 sm:py-8">
+                  배송 정보가 없습니다.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="mt-8 text-center">
-          <Link href="/">
-            <Button size="lg" className="min-w-[200px]">
-              홈으로 가기
+        {/* Action Buttons */}
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
+          <Link href="/mypage" className="w-full sm:w-auto">
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full sm:min-w-[150px] lg:min-w-[120px] text-sm sm:text-base lg:text-sm"
+            >
+              목록으로
+            </Button>
+          </Link>
+          <Link href="/products" className="w-full sm:w-auto">
+            <Button
+              size="lg"
+              className="w-full sm:min-w-[150px] lg:min-w-[120px] text-sm sm:text-base lg:text-sm"
+            >
+              쇼핑 계속하기
             </Button>
           </Link>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OrderDetailPage() {
+  return (
+    <QueryErrorBoundary>
+      <Suspense fallback={<Loading message="주문 정보를 불러오는 중..." />}>
+        <OrderDetailContent />
+      </Suspense>
+    </QueryErrorBoundary>
   );
 }
