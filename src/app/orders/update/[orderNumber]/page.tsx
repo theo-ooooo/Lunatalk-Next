@@ -2,12 +2,12 @@
 
 import { Suspense } from "react";
 import OrderUpdateClient from "@/components/order/OrderUpdateClient";
-import { useOrderUpdate } from "@/hooks/order/useOrderUpdate";
+import { useOrderDetail } from "@/hooks/order/useOrderDetail";
 import { Loading } from "@/components/common/Loading";
 import { QueryErrorBoundary } from "@/components/common/QueryErrorBoundary";
 
 function OrderUpdateContent() {
-  const { order } = useOrderUpdate();
+  const { order } = useOrderDetail();
 
   return (
     <div className="min-h-screen bg-slate-50 py-12">

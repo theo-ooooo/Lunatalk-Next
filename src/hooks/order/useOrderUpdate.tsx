@@ -16,11 +16,11 @@ export function useOrderUpdate(order: Order) {
   const openPostcode = useDaumPostcodePopup();
 
   // 배송지 정보 초기화
-  const initialDelivery = order.deliveries?.[0];
+  const initialDelivery = order?.deliveries?.[0];
 
   const [shippingInfo, setShippingInfo] = useState({
-    name: initialDelivery?.receiverName || order.member?.username || "",
-    phone: initialDelivery?.receiverPhone || order.member?.phone || "",
+    name: initialDelivery?.receiverName || order?.member?.username || "",
+    phone: initialDelivery?.receiverPhone || order?.member?.phone || "",
     zipCode: initialDelivery?.zipcode || "",
     address1: initialDelivery?.addressLine1 || "",
     address2: initialDelivery?.addressLine2 || "",
@@ -29,10 +29,10 @@ export function useOrderUpdate(order: Order) {
 
   // 주문 상태 체크 및 리다이렉트
   useEffect(() => {
-    if (order.status === "PAYMENT_COMPLETED") {
+    if (order?.status === "PAYMENT_COMPLETED") {
       router.replace("/cart");
     }
-  }, [order.status, router]);
+  }, [order?.status, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
@@ -152,4 +152,3 @@ export function useOrderUpdate(order: Order) {
     handlePayment,
   };
 }
-

@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -7,12 +8,13 @@ import { SummaryRow } from "@/components/ui/SummaryRow";
 import { useCart } from "@/hooks/cart/useCart";
 import { CartItem } from "@/components/cart/CartItem";
 import { Loading } from "@/components/common/Loading";
+import { QueryErrorBoundary } from "@/components/common/QueryErrorBoundary";
 import { ShoppingCart, CreditCard } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
 
-export default function CartPage() {
+function CartContent() {
   const {
     cartItems,
-    isLoading,
     isAuthenticated,
     selectedIds,
     isOrdering,
@@ -22,9 +24,6 @@ export default function CartPage() {
     handleDelete,
     handleOrder,
   } = useCart();
-
-  if (isLoading && isAuthenticated)
-    return <Loading message="장바구니를 불러오는 중..." fullScreen={false} />;
 
   return (
     <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
@@ -161,6 +160,64 @@ export default function CartPage() {
               {/* 비로그인 상태일 때는 내용을 숨기거나 간단한 안내만 표시 (모달이 뜸) */}
             </div>
           </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function CartPage() {
+  const { isAuthenticated } = useAuthStore();
+  // useCart는 모달 로직을 포함하므로 호출 필요
+  const cartHook = useCart();
+  const cartIsAuthenticated = cartHook.isAuthenticated;
+
+  // 비로그인 상태일 때는 모달이 뜨므로 별도 처리 불필요
+  if (!cartIsAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
+        <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
+              장바구니
+            </h1>
+          </div>
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
+            <div className="py-20 text-center">{/* 모달이 표시됨 */}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
+            장바구니
+          </h1>
+        </div>
+        {/* 조건부 쿼리이므로 Suspense 사용 불가, 대신 isLoading 체크 */}
+        {cartHook.isLoading ? (
+          <Loading message="장바구니를 불러오는 중..." fullScreen={false} />
+        ) : (
+          <QueryErrorBoundary
+            fallback={
+              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
+                <div className="py-20 text-center">
+                  <p className="text-slate-500 mb-4">
+                    장바구니를 불러오는 중 오류가 발생했습니다.
+                  </p>
+                  <Button onClick={() => window.location.reload()}>
+                    다시 시도
+                  </Button>
+                </div>
+              </div>
+            }
+          >
+            <CartContent />
+          </QueryErrorBoundary>
         )}
       </div>
     </div>

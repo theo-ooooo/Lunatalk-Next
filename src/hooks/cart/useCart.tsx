@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { cartApi, orderApi } from "@/services/api";
@@ -11,12 +11,17 @@ export function useCart() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
-  const { openModal, closeModal } = useModalStore();
+  const { openModal, closeModal, isOpen } = useModalStore();
+  const hasShownLoginModal = useRef(false);
 
   const [isOrdering, setIsOrdering] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const showLoginModal = () => {
+    // 이미 모달이 열려있거나 이미 한 번 띄웠으면 중복 방지
+    if (isOpen || hasShownLoginModal.current) return;
+    hasShownLoginModal.current = true;
+
     openModal({
       title: "로그인 필요",
       content: (
@@ -34,6 +39,7 @@ export function useCart() {
             fullWidth
             onClick={() => {
               closeModal();
+              hasShownLoginModal.current = false;
               router.push("/");
             }}
           >
@@ -44,6 +50,7 @@ export function useCart() {
             fullWidth
             onClick={() => {
               closeModal();
+              hasShownLoginModal.current = false;
               router.push("/login");
             }}
           >
@@ -55,12 +62,25 @@ export function useCart() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      showLoginModal();
+    // 로그인 상태가 true로 변경되면 ref 리셋
+    if (isAuthenticated) {
+      hasShownLoginModal.current = false;
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
 
+    // 로그인 상태가 false이고, 모달을 아직 띄우지 않았을 때만 모달 표시
+    // 짧은 딜레이를 두어 초기 상태가 안정화된 후에 체크
+    const timer = setTimeout(() => {
+      if (!isAuthenticated && !hasShownLoginModal.current) {
+        showLoginModal();
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, isOpen]);
+
+  // 로그인 상태일 때만 쿼리 실행
   const { data: rawCartItems, isLoading } = useQuery({
     queryKey: ["cart"],
     queryFn: cartApi.getCartItems,
