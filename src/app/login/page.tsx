@@ -1,33 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/useAuthStore';
-import { authApi } from '@/services/api';
+import Link from "next/link";
+import { useLogin } from "@/hooks/auth/useLogin";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { login } = useAuthStore();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ username: '', password: '' });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const response = await authApi.login(formData);
-      if (response.accessToken) {
-        login(response.accessToken);
-        router.push('/');
-        router.refresh();
-      }
-    } catch (error) {
-      alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { formAction, isPending } = useLogin();
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -38,10 +15,12 @@ export default function LoginPage() {
             루나톡에 오신 것을 환영합니다.
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" action={formAction}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="sr-only">아이디</label>
+              <label htmlFor="username" className="sr-only">
+                아이디
+              </label>
               <input
                 id="username"
                 name="username"
@@ -49,12 +28,12 @@ export default function LoginPage() {
                 required
                 className="appearance-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-lg focus:outline-none focus:ring-slate-500 focus:border-slate-500 focus:z-10 sm:text-sm"
                 placeholder="아이디"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">비밀번호</label>
+              <label htmlFor="password" className="sr-only">
+                비밀번호
+              </label>
               <input
                 id="password"
                 name="password"
@@ -62,24 +41,25 @@ export default function LoginPage() {
                 required
                 className="appearance-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-lg focus:outline-none focus:ring-slate-500 focus:border-slate-500 focus:z-10 sm:text-sm"
                 placeholder="비밀번호"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
             </div>
           </div>
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={isPending}
             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50"
           >
-            {loading ? '로그인 중...' : '로그인'}
+            {isPending ? "로그인 중..." : "로그인"}
           </button>
         </form>
 
         <div className="text-center text-sm">
           <span className="text-slate-600">아직 회원이 아니신가요? </span>
-          <Link href="/register" className="font-medium text-slate-900 hover:text-slate-700">
+          <Link
+            href="/register"
+            className="font-medium text-slate-900 hover:text-slate-700"
+          >
             회원가입
           </Link>
         </div>
@@ -87,5 +67,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-
