@@ -13,13 +13,8 @@ export function useCart() {
   const { isAuthenticated } = useAuthStore();
   const { openModal, closeModal } = useModalStore();
 
-  const [mounted, setMounted] = useState(false);
   const [isOrdering, setIsOrdering] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const showLoginModal = () => {
     openModal({
@@ -60,11 +55,11 @@ export function useCart() {
   };
 
   useEffect(() => {
-    if (mounted && !isAuthenticated) {
+    if (!isAuthenticated) {
       showLoginModal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, isAuthenticated]);
+  }, [isAuthenticated]);
 
   const { data: rawCartItems, isLoading } = useQuery({
     queryKey: ["cart"],
@@ -178,7 +173,6 @@ export function useCart() {
     cartItems,
     isLoading,
     isAuthenticated,
-    mounted,
     selectedIds,
     isOrdering,
     totalAmount,

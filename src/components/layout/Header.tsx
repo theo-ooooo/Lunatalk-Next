@@ -14,10 +14,6 @@ export default function Header() {
   const { isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
@@ -89,7 +85,7 @@ export default function Header() {
             <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
           </Link>
 
-          {mounted && isAuthenticated ? (
+          {isAuthenticated ? (
             <div className="flex items-center gap-1 md:gap-2">
               <Link
                 href="/mypage"
