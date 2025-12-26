@@ -21,6 +21,10 @@ import { useOrderDetail } from "@/hooks/order/useOrderDetail";
 import { Loading } from "@/components/common/Loading";
 import { QueryErrorBoundary } from "@/components/common/QueryErrorBoundary";
 
+// 인증이 필요한 페이지이므로 빌드 시 prerender 방지
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+
 function OrderDetailContent() {
   const { order, delivery } = useOrderDetail();
 

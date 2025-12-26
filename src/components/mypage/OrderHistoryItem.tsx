@@ -41,9 +41,7 @@ const shouldShowDeliveryInfo = (orderStatus: string, deliveryStatus?: string) =>
   // 주문 상태가 배송중/배송완료이거나, 배송 상태가 있는 경우 표시
   const orderShipped = 
     orderStatus === "SHIPPED" ||
-    orderStatus === "DELIVERED" ||
-    orderStatus === "배송중" ||
-    orderStatus === "배송완료";
+    orderStatus === "DELIVERED";
   
   // 배송 상태가 READY 이상이면 표시
   const deliveryExists = deliveryStatus && 
@@ -59,7 +57,7 @@ const shouldShowDeliveryInfo = (orderStatus: string, deliveryStatus?: string) =>
 export function OrderHistoryItem({ order }: OrderHistoryItemProps) {
   const delivery = order.deliveries?.[0];
   const showDeliveryInfo = shouldShowDeliveryInfo(order.status, delivery?.status) && delivery;
-  const isShipped = delivery?.status === "SHIPPED" || order.status === "SHIPPED" || order.status === "배송중";
+  const isShipped = delivery?.status === "SHIPPED" || order.status === "SHIPPED";
   const trackingUrl = delivery?.courierCompany && delivery?.trackingNumber 
     ? getTrackingUrl(delivery.courierCompany, delivery.trackingNumber)
     : null;
