@@ -117,7 +117,7 @@ export interface Delivery {
   addressLine2: string;
   zipcode: string;
   message: string;
-  courierCompany: string;
+  courierCompany: 'CJ_LOGISTICS' | 'DHL' | 'FEDEX' | 'HANJIN' | 'KOREA_POST' | 'LOGEN' | 'LOTTE' | 'OTHER' | 'UPS';
   trackingNumber: string;
   status: 'READY' | 'SHIPPED' | 'DELIVERED' | 'RETURNED' | 'REDELIVERY';
 }
