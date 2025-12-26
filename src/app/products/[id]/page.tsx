@@ -1,8 +1,12 @@
+import { Suspense } from "react";
 import { productApi } from "@/services/api";
 import ProductDetailClient from "@/components/product/ProductDetailClient";
 import { getImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { Loading } from "@/components/common/Loading";
+import { QueryErrorBoundary } from "@/components/common/QueryErrorBoundary";
+import { Button } from "@/components/ui/Button";
 
 interface Props {
   params: Promise<{
@@ -57,7 +61,22 @@ export default async function ProductDetailPage({ params }: Props) {
       </div>
 
       <div className="container mx-auto px-4 py-8 md:py-12">
-        <ProductDetailClient productId={Number(id)} />
+        <QueryErrorBoundary
+          fallback={
+            <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+              <p className="text-slate-500 font-medium">
+                상품을 찾을 수 없습니다.
+              </p>
+              <Link href="/products">
+                <Button variant="outline">상품 목록으로 돌아가기</Button>
+              </Link>
+            </div>
+          }
+        >
+          <Suspense fallback={<Loading message="상품 정보를 불러오는 중..." />}>
+            <ProductDetailClient productId={Number(id)} />
+          </Suspense>
+        </QueryErrorBoundary>
       </div>
     </div>
   );

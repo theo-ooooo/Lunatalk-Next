@@ -1,19 +1,18 @@
 "use client";
 
 import { formatPrice, getImageUrl } from "@/lib/utils";
-import { Minus, Plus, ShoppingCart, Heart, Share2, Loader2 } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Heart, Share2 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useProductDetail } from "@/hooks/product/useProductDetail";
 import { useProduct } from "@/hooks/product/useProduct";
-import Link from "next/link";
 
 interface Props {
   productId: number;
 }
 
 export default function ProductDetailClient({ productId }: Props) {
-  const { product, isLoading, isError } = useProduct(productId);
+  const { product } = useProduct(productId);
   const {
     quantity,
     imgSrc,
@@ -22,25 +21,6 @@ export default function ProductDetailClient({ productId }: Props) {
     handleAddToCart,
     handleBuyNow,
   } = useProductDetail(product);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-slate-300" />
-      </div>
-    );
-  }
-
-  if (isError || !product) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-        <p className="text-slate-500 font-medium">상품을 찾을 수 없습니다.</p>
-        <Link href="/products">
-          <Button variant="outline">상품 목록으로 돌아가기</Button>
-        </Link>
-      </div>
-    );
-  }
 
   // 상세 이미지들 필터링
   const contentImages =
