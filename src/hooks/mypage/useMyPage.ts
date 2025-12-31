@@ -73,9 +73,9 @@ export function useMyPage() {
       {
         icon: FileText,
         label: "상품문의",
-        href: "#",
+        href: "/inquiries",
         color: "bg-green-50 text-green-600",
-        disabled: true,
+        disabled: false,
       },
       {
         icon: Gift,
