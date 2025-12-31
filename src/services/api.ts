@@ -17,6 +17,10 @@ import {
   PaymentConfirmResponse,
   PageOrderListResponse,
   OrderCreateDeliveryRequest,
+  InquiryCreateRequest,
+  InquiryResponse,
+  InquiryUpdateRequest,
+  PageInquiryResponse,
 } from "@/types/api";
 
 // 상품 관련
@@ -142,6 +146,49 @@ export const orderApi = {
     return fetchExtended(`/orders/${orderNumber}/delivery`, {
       method: "PATCH",
       body: JSON.stringify(data),
+    });
+  },
+};
+
+// 문의 관련
+export const inquiryApi = {
+  // 문의 생성
+  createInquiry: async (data: InquiryCreateRequest) => {
+    return fetchExtended<InquiryResponse>("/inquiries", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+  // 내 문의 목록 조회
+  getMyInquiries: async (params: {
+    page: number;
+    size: number;
+    sort?: string[];
+    type?: "PRODUCT" | "ORDER" | "GENERAL";
+    status?: "PENDING" | "ANSWERED" | "CLOSED";
+  }) => {
+    return fetchExtended<PageInquiryResponse>("/inquiries/my", {
+      params: { ...params } as any,
+      cache: "no-store",
+    });
+  },
+  // 문의 상세 조회
+  getInquiry: async (inquiryId: number) => {
+    return fetchExtended<InquiryResponse>(`/inquiries/${inquiryId}`, {
+      cache: "no-store",
+    });
+  },
+  // 문의 수정
+  updateInquiry: async (inquiryId: number, data: InquiryUpdateRequest) => {
+    return fetchExtended<InquiryResponse>(`/inquiries/${inquiryId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+  // 문의 삭제
+  deleteInquiry: async (inquiryId: number) => {
+    return fetchExtended(`/inquiries/${inquiryId}`, {
+      method: "DELETE",
     });
   },
 };

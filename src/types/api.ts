@@ -44,15 +44,15 @@ export interface PageResponse<T> {
 export interface Category {
   categoryId: number;
   categoryName: string;
-  status: 'ACTIVE' | 'DELETED';
-  visibility: 'VISIBLE' | 'HIDDEN';
+  status: "ACTIVE" | "DELETED";
+  visibility: "VISIBLE" | "HIDDEN";
   productCount: number;
 }
 
 // 이미지
 export interface Image {
   id: number;
-  imageType: 'PRODUCT_THUMBNAIL' | 'PRODUCT_CONTENT';
+  imageType: "PRODUCT_THUMBNAIL" | "PRODUCT_CONTENT";
   imageKey: string;
   imagePath?: string;
   imageUrl?: string; // FindImageDto 호환
@@ -66,7 +66,7 @@ export interface Product {
   productName?: string; // 호환성 위해 추가
   price: number;
   quantity: number;
-  visibility: 'VISIBLE' | 'HIDDEN';
+  visibility: "VISIBLE" | "HIDDEN";
   colors: string[];
   images: Image[]; // FindImageDto
   category: Category;
@@ -74,7 +74,8 @@ export interface Product {
 
 export interface ProductFindResponse extends Product {}
 
-export interface PageProductFindResponse extends PageResponse<ProductFindResponse> {}
+export interface PageProductFindResponse
+  extends PageResponse<ProductFindResponse> {}
 export interface PageOrderListResponse extends PageResponse<Order> {}
 
 // 기획전
@@ -82,7 +83,7 @@ export interface Exhibition {
   exhibitionId: number;
   title: string;
   description: string;
-  visibility: 'VISIBLE' | 'HIDDEN';
+  visibility: "VISIBLE" | "HIDDEN";
   startAt: string;
   endAt: string;
   products: ExhibitionProductDto[];
@@ -117,15 +118,30 @@ export interface Delivery {
   addressLine2: string;
   zipcode: string;
   message: string;
-  courierCompany: 'CJ_LOGISTICS' | 'DHL' | 'FEDEX' | 'HANJIN' | 'KOREA_POST' | 'LOGEN' | 'LOTTE' | 'OTHER' | 'UPS';
+  courierCompany:
+    | "CJ_LOGISTICS"
+    | "DHL"
+    | "FEDEX"
+    | "HANJIN"
+    | "KOREA_POST"
+    | "LOGEN"
+    | "LOTTE"
+    | "OTHER"
+    | "UPS";
   trackingNumber: string;
-  status: 'READY' | 'SHIPPED' | 'DELIVERED' | 'RETURNED' | 'REDELIVERY';
+  status: "READY" | "SHIPPED" | "DELIVERED" | "RETURNED" | "REDELIVERY";
 }
 
 export interface Order {
   orderId: number;
   orderNumber: string;
-  status: 'ORDERED' | 'PAYMENT_COMPLETED' | 'PAYMENT_FAILED' | 'CANCELLED' | 'SHIPPED' | 'DELIVERED';
+  status:
+    | "ORDERED"
+    | "PAYMENT_COMPLETED"
+    | "PAYMENT_FAILED"
+    | "CANCELLED"
+    | "SHIPPED"
+    | "DELIVERED";
   totalPrice: number;
   createdAt: string;
   nickname?: string;
@@ -155,7 +171,7 @@ export interface PaymentConfirmRequest {
 export interface PaymentConfirmResponse {
   orderNumber: string;
   amount: number;
-  paymentStatus: 'READY' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
+  paymentStatus: "READY" | "SUCCESS" | "FAILED" | "CANCELLED";
   orderStatus: string;
   paymentKey: string;
   approvedAt: string;
@@ -209,3 +225,41 @@ export interface OrderCreateDeliveryRequest {
   name: string;
   message?: string;
 }
+
+// 문의 관련
+export interface InquiryCreateRequest {
+  type: "PRODUCT" | "ORDER" | "GENERAL";
+  title: string;
+  content: string;
+  referenceId?: number; // 상품 ID 또는 주문 ID
+  orderNumber?: string; // 주문 번호 (주문 문의인 경우)
+}
+
+export interface InquiryUpdateRequest {
+  title: string;
+  content: string;
+}
+
+export interface InquiryReplyResponse {
+  replyId: number;
+  content: string;
+  admin: Member;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InquiryResponse {
+  inquiryId: number;
+  type: "PRODUCT" | "ORDER" | "GENERAL";
+  title: string;
+  content: string;
+  status: "PENDING" | "ANSWERED" | "CLOSED";
+  referenceId?: number; // 상품 ID, 주문 ID 등
+  referenceName?: string; // 상품 이름, 주문 번호 등
+  member: Member;
+  reply?: InquiryReplyResponse;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PageInquiryResponse extends PageResponse<InquiryResponse> {}
