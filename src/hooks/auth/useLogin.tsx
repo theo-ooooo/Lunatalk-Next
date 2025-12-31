@@ -1,30 +1,25 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useModalStore } from "@/store/useModalStore";
-import { loginAction } from "@/actions/auth";
 import { Button } from "@/components/ui/Button";
+import { authApi } from "@/services/api";
 
 export function useLogin() {
   const router = useRouter();
   const { login } = useAuthStore();
   const { openModal, closeModal } = useModalStore();
+  const [isPending, setIsPending] = useState(false);
 
-  const [state, formAction, isPending] = useActionState(loginAction, null);
-
-  useEffect(() => {
-    if (state?.success && state?.accessToken) {
-      login(state.accessToken);
-      router.push("/");
-      router.refresh();
-    } else if (state?.error) {
+  const handleLogin = async (username: string, password: string) => {
+    if (!username || !password) {
       openModal({
         title: "로그인 실패",
         content: (
           <div className="text-center">
-            <p>{state.error}</p>
+            <p>아이디와 비밀번호를 입력해주세요.</p>
           </div>
         ),
         footer: (
@@ -33,11 +28,46 @@ export function useLogin() {
           </Button>
         ),
       });
+      return;
     }
-  }, [state, login, router, openModal, closeModal]);
+
+    setIsPending(true);
+    try {
+      const response = await authApi.login({ username, password });
+
+      if (response.accessToken) {
+        login(response.accessToken);
+        router.push("/");
+        router.refresh();
+      } else {
+        throw new Error("로그인에 실패했습니다.");
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.";
+
+      openModal({
+        title: "로그인 실패",
+        content: (
+          <div className="text-center">
+            <p>{errorMessage}</p>
+          </div>
+        ),
+        footer: (
+          <Button variant="primary" fullWidth onClick={closeModal}>
+            확인
+          </Button>
+        ),
+      });
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return {
-    formAction,
+    handleLogin,
     isPending,
   };
 }

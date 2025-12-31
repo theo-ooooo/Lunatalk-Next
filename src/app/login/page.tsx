@@ -2,9 +2,18 @@
 
 import Link from "next/link";
 import { useLogin } from "@/hooks/auth/useLogin";
+import { FormEvent } from "react";
 
 export default function LoginPage() {
-  const { formAction, isPending } = useLogin();
+  const { handleLogin, isPending } = useLogin();
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
+    await handleLogin(username, password);
+  };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -15,7 +24,7 @@ export default function LoginPage() {
             루나톡에 오신 것을 환영합니다.
           </p>
         </div>
-        <form className="mt-8 space-y-6" action={formAction}>
+        <form className="mt-8 space-y-6" onSubmit={onSubmit}>
           <div className="space-y-4">
             <div>
               <label htmlFor="username" className="sr-only">

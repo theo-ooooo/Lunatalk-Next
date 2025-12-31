@@ -41,6 +41,7 @@ export async function fetchExtended<T>(
   try {
     const response = await fetch(url, {
       headers: { ...defaultHeaders, ...headers },
+      credentials: "include", // 쿠키를 받기 위해 필요
       ...rest,
     });
 
@@ -69,7 +70,7 @@ export async function fetchExtended<T>(
 
       // 에러 내용을 텍스트로 먼저 읽음 (JSON이 아닐 수도 있으므로)
       const responseBody = await response.json();
-      let errorBody = responseBody;
+      const errorBody = responseBody;
 
       console.error(`[API Error] ${url} (${response.status})`, errorBody);
       throw new Error(
