@@ -1,7 +1,11 @@
 "use server";
 
 import { authApi } from "@/services/api";
-import { LoginRequest, CreateMemberRequest, AuthTokenResponse } from "@/types/api";
+import {
+  LoginRequest,
+  CreateMemberRequest,
+  AuthTokenResponse,
+} from "@/types/api";
 
 export async function loginAction(
   prevState: { error?: string; success?: boolean } | null,
@@ -68,9 +72,7 @@ export async function registerAction(
   } catch (error: any) {
     return {
       error:
-        error.message ||
-        "회원가입에 실패했습니다. 입력 정보를 확인해주세요.",
+        error.message || "회원가입에 실패했습니다. 입력 정보를 확인해주세요.",
     };
   }
 }
-

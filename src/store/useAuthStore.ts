@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -14,18 +14,20 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       accessToken: null,
       login: (token: string) => {
-        localStorage.setItem('accessToken', token);
+        localStorage.setItem("accessToken", token);
         set({ isAuthenticated: true, accessToken: token });
       },
       logout: () => {
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem("accessToken");
         set({ isAuthenticated: false, accessToken: null });
       },
     }),
     {
-      name: 'auth-storage', // localStorage key
-      partialize: (state) => ({ isAuthenticated: state.isAuthenticated, accessToken: state.accessToken }),
+      name: "auth-storage", // localStorage key
+      partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
+        accessToken: state.accessToken,
+      }),
     }
   )
 );
-
