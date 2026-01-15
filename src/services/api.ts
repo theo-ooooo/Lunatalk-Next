@@ -43,6 +43,13 @@ export const productApi = {
       cache: "no-store", // 상세 페이지도 재고 등 실시간 정보 필요
     });
   },
+  // 좋아요 토글 (백엔드가 토글 방식이면 DELETE 없이 POST 한 번으로 on/off)
+  toggleLike: async (id: number) => {
+    // 문서상 200 OK (응답 바디 없음)
+    return fetchExtended<void>(`/products/${id}/likes`, {
+      method: "POST",
+    });
+  },
 };
 
 // 카테고리 관련

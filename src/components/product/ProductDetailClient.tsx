@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useProductDetail } from "@/hooks/product/useProductDetail";
 import { useProduct } from "@/hooks/product/useProduct";
+import { useProductLike } from "@/hooks/product/useProductLike";
 
 interface Props {
   productId: number;
@@ -21,6 +22,10 @@ export default function ProductDetailClient({ productId }: Props) {
     handleAddToCart,
     handleBuyNow,
   } = useProductDetail(product);
+  const { isLiked, likeCount, isToggling, handleToggleLike } = useProductLike(
+    productId,
+    { isLiked: product?.isLiked, likeCount: product?.likeCount }
+  );
 
   // 상세 이미지들 필터링
   const contentImages =
@@ -60,10 +65,20 @@ export default function ProductDetailClient({ productId }: Props) {
                 </span>
                 <div className="flex gap-2 md:gap-3 text-slate-400">
                   <button
-                    className="p-1.5 md:p-2 hover:bg-gray-50 rounded-full hover:text-slate-900 transition-all"
-                    aria-label="찜하기"
+                    onClick={handleToggleLike}
+                    disabled={isToggling}
+                    className={`p-1.5 md:p-2 hover:bg-gray-50 rounded-full hover:text-slate-900 transition-all ${
+                      isLiked
+                        ? "text-red-500 fill-red-500 hover:text-red-600 hover:fill-red-600"
+                        : ""
+                    } ${isToggling ? "opacity-50 cursor-not-allowed" : ""}`}
+                    aria-label={isLiked ? "찜하기 취소" : "찜하기"}
                   >
-                    <Heart className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
+                    <Heart
+                      className={`w-5 h-5 md:w-6 md:h-6 stroke-[1.5] ${
+                        isLiked ? "fill-current" : ""
+                      }`}
+                    />
                   </button>
                   <button
                     className="p-1.5 md:p-2 hover:bg-gray-50 rounded-full hover:text-slate-900 transition-all"

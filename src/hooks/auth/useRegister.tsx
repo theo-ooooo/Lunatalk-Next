@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useModalStore } from "@/store/useModalStore";
 import { registerAction } from "@/actions/auth";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 
 export function useRegister() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuthStore();
   const { openModal, closeModal } = useModalStore();
 
@@ -30,7 +31,8 @@ export function useRegister() {
             fullWidth
             onClick={() => {
               closeModal();
-              router.push("/");
+              const redirect = searchParams.get("redirect");
+              router.push(redirect || "/");
               router.refresh();
             }}
           >
@@ -53,7 +55,7 @@ export function useRegister() {
         ),
       });
     }
-  }, [state, login, router, openModal, closeModal]);
+  }, [state, login, router, searchParams, openModal, closeModal]);
 
   return {
     formAction,

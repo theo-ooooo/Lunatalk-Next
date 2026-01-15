@@ -1,11 +1,25 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLogin } from "@/hooks/auth/useLogin";
+import { useAuthStore } from "@/store/useAuthStore";
 import { FormEvent } from "react";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { isAuthenticated, accessToken } = useAuthStore();
   const { handleLogin, isPending } = useLogin();
+
+  // 토큰이 있으면 이전 페이지로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated && accessToken) {
+      const redirect = searchParams.get("redirect");
+      router.push(redirect || "/");
+    }
+  }, [isAuthenticated, accessToken, router, searchParams]);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

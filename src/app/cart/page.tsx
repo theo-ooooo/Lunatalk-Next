@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -168,12 +169,17 @@ function CartContent() {
 
 export default function CartPage() {
   const { isAuthenticated } = useAuthStore();
-  // useCart는 모달 로직을 포함하므로 호출 필요
-  const cartHook = useCart();
-  const cartIsAuthenticated = cartHook.isAuthenticated;
+  const router = useRouter();
 
-  // 비로그인 상태일 때는 모달이 뜨므로 별도 처리 불필요
-  if (!cartIsAuthenticated) {
+  // 비로그인 상태일 때는 바로 로그인 페이지로 리다이렉트 (useCart 호출 전에 체크)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login?redirect=/cart");
+    }
+  }, [isAuthenticated, router]);
+
+  // 비로그인 상태면 로딩 화면만 표시
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
@@ -183,12 +189,17 @@ export default function CartPage() {
             </h1>
           </div>
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
-            <div className="py-20 text-center">{/* 모달이 표시됨 */}</div>
+            <div className="py-20 text-center">
+              <Loading message="로그인 페이지로 이동 중..." fullScreen={false} />
+            </div>
           </div>
         </div>
       </div>
     );
   }
+
+  // 로그인 상태일 때만 useCart 호출 (모달 로직이 실행되지 않도록)
+  const cartHook = useCart();
 
   return (
     <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">

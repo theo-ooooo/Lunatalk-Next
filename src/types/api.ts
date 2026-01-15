@@ -70,6 +70,8 @@ export interface Product {
   colors: string[];
   images: Image[]; // FindImageDto
   category: Category;
+  isLiked?: boolean; // 좋아요 여부
+  likeCount?: number; // 좋아요 개수
 }
 
 export interface ProductFindResponse extends Product {}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useModalStore } from "@/store/useModalStore";
 import { Button } from "@/components/ui/Button";
@@ -9,6 +9,7 @@ import { authApi } from "@/services/api";
 
 export function useLogin() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuthStore();
   const { openModal, closeModal } = useModalStore();
   const [isPending, setIsPending] = useState(false);
@@ -37,7 +38,8 @@ export function useLogin() {
 
       if (response.accessToken) {
         login(response.accessToken);
-        router.push("/");
+        const redirect = searchParams.get("redirect");
+        router.push(redirect || "/");
         router.refresh();
       } else {
         throw new Error("로그인에 실패했습니다.");

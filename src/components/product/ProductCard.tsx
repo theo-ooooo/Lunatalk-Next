@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Product } from "@/types/api";
 import { formatPrice, getImageUrl } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { Heart } from "lucide-react";
+import { useProductLike } from "@/hooks/product/useProductLike";
 
 interface ProductCardProps {
   product: Product;
@@ -28,6 +30,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const [imgSrc, setImgSrc] = useState(getInitialImage());
   const [isHovered, setIsHovered] = useState(false);
+  const { isLiked, isToggling, handleToggleLike } = useProductLike(
+    product.productId,
+    { isLiked: product.isLiked, likeCount: product.likeCount }
+  );
 
   // product prop이 변경될 때 이미지 URL 업데이트 (필요 시)
   useEffect(() => {
@@ -64,6 +70,26 @@ export default function ProductCard({ product }: ProductCardProps) {
             </span>
           </div>
         )}
+        {/* 좋아요 버튼 */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleToggleLike();
+          }}
+          disabled={isToggling}
+          className={`absolute top-2 right-2 p-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all ${
+            isLiked
+              ? "text-red-500 fill-red-500 hover:bg-red-50"
+              : "text-slate-400 hover:text-slate-600 hover:bg-white"
+          } ${isToggling ? "opacity-50 cursor-not-allowed" : ""}`}
+          aria-label={isLiked ? "찜하기 취소" : "찜하기"}
+        >
+          <Heart
+            className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`}
+            strokeWidth={1.5}
+          />
+        </button>
       </div>
 
       <div className="space-y-1 px-1">
