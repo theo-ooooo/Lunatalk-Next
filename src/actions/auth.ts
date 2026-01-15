@@ -10,7 +10,12 @@ import {
 export async function loginAction(
   prevState: { error?: string; success?: boolean } | null,
   formData: FormData
-): Promise<{ error?: string; success?: boolean; accessToken?: string }> {
+): Promise<{
+  error?: string;
+  success?: boolean;
+  accessToken?: string;
+  refreshToken?: string;
+}> {
   try {
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
@@ -25,7 +30,11 @@ export async function loginAction(
     } as LoginRequest);
 
     if (response.accessToken) {
-      return { success: true, accessToken: response.accessToken };
+      return {
+        success: true,
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      };
     }
 
     return { error: "로그인에 실패했습니다." };
@@ -41,7 +50,12 @@ export async function loginAction(
 export async function registerAction(
   prevState: { error?: string; success?: boolean } | null,
   formData: FormData
-): Promise<{ error?: string; success?: boolean; accessToken?: string }> {
+): Promise<{
+  error?: string;
+  success?: boolean;
+  accessToken?: string;
+  refreshToken?: string;
+}> {
   try {
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
@@ -65,7 +79,11 @@ export async function registerAction(
     } as CreateMemberRequest);
 
     if (response.accessToken) {
-      return { success: true, accessToken: response.accessToken };
+      return {
+        success: true,
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      };
     }
 
     return { error: "회원가입에 실패했습니다." };

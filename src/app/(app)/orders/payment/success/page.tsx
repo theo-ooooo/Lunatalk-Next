@@ -5,6 +5,26 @@ import { useRouter } from "next/navigation";
 import { orderApi } from "@/services/api";
 import { Loader2 } from "lucide-react";
 
+function extractErrorMessage(error: unknown) {
+  // 1) fetchExtended가 throw한 Error(message)
+  if (error instanceof Error && error.message) return error.message;
+
+  // 2) 백엔드 에러 응답 객체를 그대로 받은 경우: { data: { message: string } }
+  if (typeof error === "object" && error !== null) {
+    const maybeData = (error as { data?: unknown }).data;
+    if (typeof maybeData === "object" && maybeData !== null) {
+      const msg = (maybeData as { message?: unknown }).message;
+      if (typeof msg === "string" && msg) return msg;
+    }
+
+    // 3) 일반 객체: { message: string }
+    const msg = (error as { message?: unknown }).message;
+    if (typeof msg === "string" && msg) return msg;
+  }
+
+  return "결제 승인 중 오류가 발생했습니다.";
+}
+
 export default function PaymentSuccessPage({
   searchParams,
 }: {
@@ -54,11 +74,13 @@ export default function PaymentSuccessPage({
         }
       } catch (error) {
         console.error("Payment confirmation failed:", error);
+        const errorMessage = extractErrorMessage(error);
+
         if (window.opener) {
           window.opener.postMessage(
             {
               type: "PAYMENT_FAIL",
-              message: "결제 승인 중 오류가 발생했습니다.",
+              message: errorMessage,
             },
             window.location.origin
           );
@@ -86,5 +108,3 @@ export default function PaymentSuccessPage({
 
   return null;
 }
-
-

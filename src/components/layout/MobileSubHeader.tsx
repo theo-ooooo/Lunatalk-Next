@@ -2,7 +2,6 @@
 
 import { ChevronLeft } from "lucide-react";
 import { Search, ShoppingCart } from "lucide-react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { categoryApi } from "@/services/api";
@@ -32,20 +31,30 @@ export default function MobileSubHeader() {
   const pathname = usePathname();
   const { cartCount } = useCartCount();
 
-  const [categoryId, setCategoryId] = useState<string | null>(null);
-  const [search, setSearch] = useState<string | null>(null);
+  const [{ categoryId, search }, setQueryState] = useState<{
+    categoryId: string | null;
+    search: string | null;
+  }>({ categoryId: null, search: null });
 
   // useSearchParams는 /_not-found prerender에서 Suspense 요구가 생겨서,
   // 모바일 서브헤더에서는 클라이언트에서만 query string을 직접 파싱한다.
   useEffect(() => {
-    if (pathname !== "/products") {
-      setCategoryId(null);
-      setSearch(null);
-      return;
-    }
-    const sp = new URLSearchParams(window.location.search);
-    setCategoryId(sp.get("categoryId"));
-    setSearch(sp.get("search"));
+    // effect 바디에서 setState를 동기 호출하면 cascading render 경고가 날 수 있어
+    // 업데이트는 비동기 콜백으로 한 번만 수행한다.
+    const timer = window.setTimeout(() => {
+      if (pathname !== "/products") {
+        setQueryState({ categoryId: null, search: null });
+        return;
+      }
+
+      const sp = new URLSearchParams(window.location.search);
+      setQueryState({
+        categoryId: sp.get("categoryId"),
+        search: sp.get("search"),
+      });
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [pathname]);
 
   const { data: categories } = useQuery({

@@ -37,7 +37,7 @@ export function useLogin() {
       const response = await authApi.login({ username, password });
 
       if (response.accessToken) {
-        login(response.accessToken);
+        login(response.accessToken, response.refreshToken);
         const redirect = searchParams.get("redirect");
         router.push(redirect || "/");
         router.refresh();

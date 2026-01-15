@@ -17,7 +17,7 @@ export function useRegister() {
 
   useEffect(() => {
     if (state?.success && state?.accessToken) {
-      login(state.accessToken);
+      login(state.accessToken, state.refreshToken);
       openModal({
         title: "회원가입 완료",
         content: (
@@ -62,4 +62,3 @@ export function useRegister() {
     isPending,
   };
 }
-
