@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import GlobalModal from "@/components/providers/GlobalModal";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,9 +22,7 @@ export default function RootLayout({
         className={`${inter.className} min-h-screen flex flex-col text-slate-900`}
       >
         <QueryProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          {children}
           <GlobalModal />
         </QueryProvider>
       </body>

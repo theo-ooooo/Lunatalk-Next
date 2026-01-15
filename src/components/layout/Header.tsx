@@ -2,150 +2,170 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, User, Menu, Search, LogOut, Heart } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { categoryApi } from "@/services/api";
+import { ShoppingCart, User, LogOut, Heart } from "lucide-react";
+import { Suspense } from "react";
+import CategoryMenu from "@/components/layout/CategoryMenu";
+import ProductSearchInput from "@/components/product/ProductSearchInput";
+import { useHeaderData } from "@/hooks/layout/useHeaderData";
+import {
+  HeaderIconButton,
+  HeaderIconLink,
+} from "@/components/layout/HeaderIcons";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuthStore();
-  const router = useRouter();
-
-
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: categoryApi.getCategories,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const handleLogout = () => {
-    logout();
-    router.push("/");
-    router.refresh();
-  };
-
-  const categoryList = Array.isArray(categories)
-    ? categories.filter((c) => c.visibility === "VISIBLE")
-    : [];
+  const { isAuthenticated, cartCount, categoryList, handleLogout } =
+    useHeaderData();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
-      <div className="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center">
-          <Image
-            src="https://admin.lunatalk.co.kr/static/media/logo.e0e49014f4ed6f070031.jpg"
-            alt="LUNATALK"
-            width={120}
-            height={40}
-            className="object-contain h-8 md:h-10 w-auto"
-            priority
-          />
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8 text-[15px] font-medium text-slate-600">
-          {categoryList.length > 0 ? (
-            categoryList.map((category) => (
-              <Link
-                key={category.categoryId}
-                href={`/products?categoryId=${category.categoryId}`}
-                className="hover:text-slate-900 hover:font-bold transition-all"
-              >
-                {category.categoryName}
-              </Link>
-            ))
-          ) : (
-            <div className="flex gap-4">
-              <div className="w-16 h-4 bg-gray-100 rounded animate-pulse"></div>
-              <div className="w-16 h-4 bg-gray-100 rounded animate-pulse"></div>
-              <div className="w-16 h-4 bg-gray-100 rounded animate-pulse"></div>
-            </div>
-          )}
-        </nav>
-
-        {/* Right Icons */}
-        <div className="flex items-center gap-2 md:gap-4 text-slate-800">
-          <Link 
-            href="/search"
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            aria-label="검색"
-          >
-            <Search className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200">
+      {/* Mobile header (Musinsa-like) */}
+      <div className="md:hidden">
+        <div className="px-4 h-12 flex items-center justify-between">
+          <Link href="/" className="flex items-center" aria-label="홈">
+            <Image
+              src="https://admin.lunatalk.co.kr/static/media/logo.e0e49014f4ed6f070031.jpg"
+              alt="LUNATALK"
+              width={120}
+              height={36}
+              className="object-contain h-7 w-auto"
+              priority
+            />
           </Link>
+          <div className="flex items-center gap-2">
+            <HeaderIconLink
+              href="/wishlist"
+              Icon={Heart}
+              ariaLabel="위시리스트"
+              title="위시리스트"
+            />
+            <HeaderIconLink
+              href="/cart"
+              Icon={ShoppingCart}
+              ariaLabel="장바구니"
+              title="장바구니"
+              badgeCount={cartCount}
+            />
 
-          <Link
-            href="/cart"
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
-            aria-label="장바구니"
+            {/* Auth entrypoint (mobile): 비로그인=로그인, 로그인=마이+로그아웃 */}
+            {isAuthenticated ? (
+              <>
+                <HeaderIconLink
+                  href="/mypage"
+                  Icon={User}
+                  ariaLabel="마이페이지"
+                />
+                <HeaderIconButton
+                  onClick={handleLogout}
+                  Icon={LogOut}
+                  ariaLabel="로그아웃"
+                  className="text-slate-700"
+                  iconClassName="text-slate-700"
+                />
+              </>
+            ) : (
+              <HeaderIconLink
+                href="/login"
+                Icon={User}
+                ariaLabel="로그인"
+                title="로그인"
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="px-4 pb-3">
+          <Suspense
+            fallback={
+              <div className="w-full h-10 rounded-md border border-slate-200 bg-white" />
+            }
           >
-            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
-          </Link>
+            <ProductSearchInput variant="mobile" />
+          </Suspense>
+        </div>
 
-          <Link
-            href="/wishlist"
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
-            aria-label="찜한 상품"
-          >
-            <Heart className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
-          </Link>
-
-          {isAuthenticated ? (
-            <div className="flex items-center gap-1 md:gap-2">
-              <Link
-                href="/mypage"
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                aria-label="마이페이지"
-              >
-                <User className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-slate-500"
-                title="로그아웃"
-                aria-label="로그아웃"
-              >
-                <LogOut className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="ml-2 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 px-5 py-2.5 rounded-full transition-all shadow-sm hover:shadow-md"
-            >
-              로그인
-            </Link>
-          )}
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 hover:bg-gray-100 rounded-full ml-1"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="메뉴 열기"
-          >
-            <Menu className="w-6 h-6 stroke-[1.5]" />
-          </button>
+        <div className="border-t border-slate-100 px-4">
+          <CategoryMenu categories={categoryList} className="py-1" />
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden border-t border-gray-100 p-4 space-y-2 bg-white animate-in slide-in-from-top-2">
-          {categoryList.map((category) => (
-            <Link
-              key={category.categoryId}
-              href={`/products?categoryId=${category.categoryId}`}
-              className="block text-[15px] font-medium p-3 hover:bg-gray-50 rounded-xl text-slate-700"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {category.categoryName}
+      {/* Desktop header */}
+      <div className="hidden md:block">
+        <div className="container mx-auto px-4">
+          {/* Top row */}
+          <div className="h-14 flex items-center justify-between">
+            <Link href="/" className="flex items-center" aria-label="홈">
+              <Image
+                src="https://admin.lunatalk.co.kr/static/media/logo.e0e49014f4ed6f070031.jpg"
+                alt="LUNATALK"
+                width={140}
+                height={44}
+                className="object-contain h-9 w-auto"
+                priority
+              />
             </Link>
-          ))}
+
+            <div className="flex items-center gap-2">
+              <HeaderIconLink
+                href="/wishlist"
+                Icon={Heart}
+                ariaLabel="위시리스트"
+                title="위시리스트"
+              />
+              <HeaderIconLink
+                href="/cart"
+                Icon={ShoppingCart}
+                ariaLabel="장바구니"
+                title="장바구니"
+                badgeCount={cartCount}
+              />
+
+              {isAuthenticated ? (
+                <>
+                  <HeaderIconLink
+                    href="/mypage"
+                    Icon={User}
+                    ariaLabel="마이페이지"
+                    title="마이페이지"
+                  />
+                  <HeaderIconButton
+                    onClick={handleLogout}
+                    Icon={LogOut}
+                    ariaLabel="로그아웃"
+                    title="로그아웃"
+                    className="text-slate-700"
+                    iconClassName="text-slate-700"
+                  />
+                </>
+              ) : (
+                <HeaderIconLink
+                  href="/login"
+                  Icon={User}
+                  ariaLabel="로그인"
+                  title="로그인"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Search row */}
+          <div className="pb-4">
+            <Suspense
+              fallback={
+                <div className="w-full h-10 rounded-md border border-slate-200 bg-white" />
+              }
+            >
+              <ProductSearchInput variant="mobile" />
+            </Suspense>
+          </div>
         </div>
-      )}
+
+        {/* Category row */}
+        <div className="border-t border-slate-100 bg-white">
+          <div className="container mx-auto px-4">
+            <CategoryMenu categories={categoryList} className="py-1" />
+          </div>
+        </div>
+      </div>
     </header>
   );
 }
