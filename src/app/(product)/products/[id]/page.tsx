@@ -39,8 +39,8 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-white pb-32">
-      {/* Breadcrumb - Static part, dynamic part handled inside Client Component or basic fallback */}
-      <div className="container mx-auto px-4 py-6">
+      {/* Breadcrumb: desktop only */}
+      <div className="hidden md:block container mx-auto px-4 py-6">
         <div className="flex items-center text-xs md:text-sm text-slate-400 font-medium">
           <Link href="/" className="hover:text-slate-900 transition-colors">
             HOME
@@ -54,13 +54,12 @@ export default async function ProductDetailPage({ params }: Props) {
           </Link>
           <ChevronRight className="w-3 h-3 mx-2 text-slate-300" />
           <span className="text-slate-800 line-clamp-1 max-w-[200px]">
-            {/* Server side doesn't fetch product name to avoid complexity, letting client handle specific data */}
             Product Detail
           </span>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 md:py-12">
+      <div className="container mx-auto px-4 py-6 md:py-12">
         <QueryErrorBoundary
           fallback={
             <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
@@ -81,3 +80,5 @@ export default async function ProductDetailPage({ params }: Props) {
     </div>
   );
 }
+
+
