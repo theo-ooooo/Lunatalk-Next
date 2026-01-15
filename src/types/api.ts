@@ -76,11 +76,10 @@ export interface Product {
   reviewCount?: number; // (선택) 리뷰 수 - 백엔드 제공 시만 표시
 }
 
-export interface ProductFindResponse extends Product {}
+export type ProductFindResponse = Product;
 
-export interface PageProductFindResponse
-  extends PageResponse<ProductFindResponse> {}
-export interface PageOrderListResponse extends PageResponse<Order> {}
+export type PageProductFindResponse = PageResponse<ProductFindResponse>;
+export type PageOrderListResponse = PageResponse<Order>;
 
 // 기획전
 export interface Exhibition {
@@ -107,11 +106,13 @@ export interface CartItem {
 
 // 주문
 export interface OrderItem {
+  productId: number;
   productName: string;
   price: number;
   quantity: number;
   totalPrice: number;
   color?: string;
+  productImageUrl?: string | null;
 }
 
 export interface Delivery {
@@ -266,4 +267,4 @@ export interface InquiryResponse {
   updatedAt: string;
 }
 
-export interface PageInquiryResponse extends PageResponse<InquiryResponse> {}
+export type PageInquiryResponse = PageResponse<InquiryResponse>;

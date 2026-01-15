@@ -10,7 +10,6 @@ export const formatPrice = (price: number) => {
 };
 
 export const getImageUrl = (path?: string) => {
-  console.log("path", path);
   if (!path) return "https://placehold.co/400x400?text=No+Image";
 
   if (path.startsWith("http")) return path;
