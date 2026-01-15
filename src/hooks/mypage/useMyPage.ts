@@ -66,9 +66,9 @@ export function useMyPage() {
       {
         icon: Heart,
         label: "관심상품",
-        href: "#",
-        color: "bg-pink-50 text-pink-600",
-        disabled: true,
+        href: "/wishlist",
+        color: "bg-slate-50 text-slate-700",
+        disabled: false,
       },
       {
         icon: FileText,

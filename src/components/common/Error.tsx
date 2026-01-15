@@ -18,7 +18,7 @@ export function Error({
   fullScreen = true,
 }: ErrorProps) {
   const containerClass = fullScreen
-    ? "min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4"
+    ? "min-h-screen bg-white flex flex-col items-center justify-center gap-4"
     : "flex flex-col items-center justify-center gap-4 py-12";
 
   return (

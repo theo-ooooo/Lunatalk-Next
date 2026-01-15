@@ -7,7 +7,7 @@ interface LoadingProps {
 
 export function Loading({ message, fullScreen = true }: LoadingProps) {
   const containerClass = fullScreen
-    ? "min-h-screen bg-slate-50 flex items-center justify-center"
+    ? "min-h-screen bg-white flex items-center justify-center"
     : "flex items-center justify-center py-12";
 
   return (

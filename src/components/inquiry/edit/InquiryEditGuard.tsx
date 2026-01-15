@@ -12,8 +12,8 @@ interface InquiryEditGuardProps {
 export function InquiryEditGuard({ inquiry, children }: InquiryEditGuardProps) {
   if (inquiry.status !== "PENDING") {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="min-h-screen bg-white">
+        <div className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
           <div className="bg-white rounded-xl p-6 border border-slate-200 text-center">
             <p className="text-slate-600 mb-4">
               답변이 완료되었거나 종료된 문의는 수정할 수 없습니다.

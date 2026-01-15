@@ -15,20 +15,19 @@ export default function PaymentFailPage({
 
   useEffect(() => {
     if (window.opener) {
-      // 약간의 지연 후 메시지 전송 (UI 렌더링 확인용)
       setTimeout(() => {
         window.opener.postMessage(
           { type: "PAYMENT_FAIL", message: message || "결제 실패", code },
           window.location.origin
         );
         window.close();
-      }, 1500); // 1.5초 후 닫힘
+      }, 1500);
     }
   }, [message, code]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 max-w-md w-full text-center">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="bg-white p-8 rounded-xl border border-slate-200 max-w-md w-full text-center">
         <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
           <XCircle className="w-8 h-8" />
         </div>
@@ -41,3 +40,5 @@ export default function PaymentFailPage({
     </div>
   );
 }
+
+

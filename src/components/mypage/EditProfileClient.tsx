@@ -12,7 +12,7 @@ export default function EditProfileClient() {
     useEditProfile();
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
+    <div className="min-h-screen bg-white py-10 md:py-12">
       <div className="container mx-auto px-4 max-w-2xl">
         <Link
           href="/mypage"
@@ -22,8 +22,12 @@ export default function EditProfileClient() {
           <span>마이페이지로 돌아가기</span>
         </Link>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
-          <h1 className="text-2xl font-bold mb-8">내 정보 수정</h1>
+        <div className="bg-white rounded-xl border border-slate-200 p-6 md:p-8">
+          <div className="pb-4 mb-6 border-b border-slate-100">
+            <h1 className="text-[18px] md:text-[22px] font-extrabold text-slate-900">
+              내 정보 수정
+            </h1>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

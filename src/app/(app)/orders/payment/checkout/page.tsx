@@ -23,7 +23,6 @@ export default function PaymentCheckoutPage({
 
     const initPayment = async () => {
       try {
-        // 주문 정보 조회 (금액, 상품명 등 확인)
         const order = await orderApi.getOrder(orderNumber);
 
         const clientKey =
@@ -75,3 +74,5 @@ export default function PaymentCheckoutPage({
     </Suspense>
   );
 }
+
+

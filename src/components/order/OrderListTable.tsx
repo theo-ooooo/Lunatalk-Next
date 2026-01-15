@@ -1,90 +1,29 @@
-import { Order } from "@/types/api";
-import { Package, ChevronRight } from "lucide-react";
-import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
+"use client";
 
-interface OrderHistoryListProps {
-  orders: Order[];
-  isLoading?: boolean;
-  showAllLink?: boolean;
-  maxItems?: number;
+import Link from "next/link";
+import { Order } from "@/types/api";
+import { formatPrice, getOrderStatusLabel } from "@/lib/utils";
+
+function statusBadgeClass(status: Order["status"]) {
+  switch (status) {
+    case "PAYMENT_FAILED":
+      return "border-red-200 text-red-700 bg-red-50";
+    case "CANCELLED":
+      return "border-slate-200 text-slate-600 bg-slate-50";
+    default:
+      return "border-slate-200 text-slate-700 bg-white";
+  }
 }
 
-const getStatusLabel = (status: string) => {
-  const statusMap: Record<string, string> = {
-    ORDERED: "주문완료",
-    PAYMENT_COMPLETED: "결제완료",
-    PAYMENT_FAILED: "결제실패",
-    CANCELLED: "취소됨",
-    SHIPPED: "배송중",
-    DELIVERED: "배송완료",
-    배송중: "배송중",
-    배송완료: "배송완료",
-  };
-  return statusMap[status] || status;
-};
+interface OrderListTableProps {
+  orders: Order[];
+}
 
-const getStatusBadge = (status: string) => {
-  const map: Record<string, string> = {
-    PAYMENT_FAILED: "border-red-200 text-red-700 bg-red-50",
-    CANCELLED: "border-slate-200 text-slate-600 bg-slate-50",
-  };
-  return map[status] || "border-slate-200 text-slate-700 bg-white";
-};
-
-export function OrderHistoryList({
-  orders,
-  isLoading = false,
-  showAllLink = true,
-  maxItems,
-}: OrderHistoryListProps) {
-  const displayOrders = maxItems ? orders.slice(0, maxItems) : orders;
-
-  if (isLoading) {
-    return (
-      <div className="py-10 text-center text-slate-500">로딩 중...</div>
-    );
-  }
-
-  if (!orders || orders.length === 0) {
-    return (
-      <div className="bg-white border border-slate-200 rounded-xl text-slate-500 overflow-hidden">
-        <div className="px-4 sm:px-6 py-4 border-b border-slate-200">
-          <h3 className="text-sm font-extrabold text-slate-900">최근 주문</h3>
-        </div>
-        <div className="py-14 text-center px-4">
-        <Package className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-        <p className="text-lg font-medium mb-2">주문 내역이 없습니다</p>
-        <p className="text-sm text-slate-400 mb-6">첫 주문을 시작해보세요!</p>
-        <Link href="/products">
-          <button className="px-6 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors">
-            쇼핑하러 가기
-          </button>
-        </Link>
-        </div>
-      </div>
-    );
-  }
-
+export default function OrderListTable({ orders }: OrderListTableProps) {
   return (
-    <section className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-      <div className="px-4 sm:px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-        <h3 className="text-sm font-extrabold flex items-center gap-2 text-slate-900">
-          <Package className="w-4 h-4" />
-          최근 주문
-        </h3>
-        {showAllLink && (
-          <Link
-            href="/orders"
-            className="text-sm text-slate-500 hover:text-slate-900 flex items-center gap-1 transition-colors"
-          >
-            전체보기 <ChevronRight className="w-4 h-4" />
-          </Link>
-        )}
-      </div>
-
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
       {/* Desktop header */}
-      <div className="hidden md:grid grid-cols-12 px-6 py-3 text-xs font-semibold text-slate-500 bg-white">
+      <div className="hidden md:grid grid-cols-12 px-6 py-3 text-xs font-semibold text-slate-500 bg-white border-b border-slate-200">
         <div className="col-span-3">주문번호</div>
         <div className="col-span-4">상품</div>
         <div className="col-span-2">주문일</div>
@@ -93,7 +32,7 @@ export function OrderHistoryList({
       </div>
 
       <div className="divide-y divide-slate-200">
-        {displayOrders.map((order) => {
+        {orders.map((order) => {
           const firstName =
             order.orderItems.length > 1
               ? `${order.orderItems[0].productName} 외 ${order.orderItems.length - 1}개`
@@ -132,11 +71,11 @@ export function OrderHistoryList({
                   </div>
                   <div className="mt-3 flex items-center justify-between">
                     <span
-                      className={`inline-flex items-center px-2 py-1 rounded-md text-[11px] font-semibold border ${getStatusBadge(
+                      className={`inline-flex items-center px-2 py-1 rounded-md text-[11px] font-semibold border ${statusBadgeClass(
                         order.status
                       )}`}
                     >
-                      {getStatusLabel(order.status)}
+                      {getOrderStatusLabel(order.status)}
                     </span>
                     <span className="text-xs text-slate-400">
                       총 {order.orderItems.length}개
@@ -155,11 +94,11 @@ export function OrderHistoryList({
                   <div className="col-span-2 text-sm text-slate-600">{dateText}</div>
                   <div className="col-span-2">
                     <span
-                      className={`inline-flex items-center px-2 py-1 rounded-md text-[11px] font-semibold border ${getStatusBadge(
+                      className={`inline-flex items-center px-2 py-1 rounded-md text-[11px] font-semibold border ${statusBadgeClass(
                         order.status
                       )}`}
                     >
-                      {getStatusLabel(order.status)}
+                      {getOrderStatusLabel(order.status)}
                     </span>
                   </div>
                   <div className="col-span-1 text-right text-sm font-extrabold text-slate-900">
@@ -171,7 +110,8 @@ export function OrderHistoryList({
           );
         })}
       </div>
-    </section>
+    </div>
   );
 }
+
 
