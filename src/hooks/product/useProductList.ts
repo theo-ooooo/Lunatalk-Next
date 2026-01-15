@@ -11,10 +11,12 @@ export function useProductList() {
   const searchParams = useSearchParams();
   const categoryIdParam = searchParams.get("categoryId");
   const searchQuery = searchParams.get("search");
+  const pageSize = 20;
 
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     categoryIdParam ? Number(categoryIdParam) : null
   );
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     if (categoryIdParam) {
@@ -24,42 +26,68 @@ export function useProductList() {
     }
   }, [categoryIdParam]);
 
+  // 카테고리/검색 조건이 바뀌면 첫 페이지로
+  useEffect(() => {
+    setPage(0);
+  }, [selectedCategory, searchQuery]);
+
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: categoryApi.getCategories,
   });
 
-  const { data: productsData, isLoading } = useQuery({
-    queryKey: ["products", selectedCategory, searchQuery],
-    queryFn: async () => {
-      // 카테고리가 선택되었고 검색어가 없을 때는 카테고리별 상품 조회 API 사용
-      if (selectedCategory && !searchQuery) {
-        const data = await categoryApi.getCategoryProducts(selectedCategory);
-        // PageProductFindResponse 형태로 변환하여 반환
-        return {
-          content: data.products || [],
-          totalPages: 1,
-          totalElements: data.products?.length || 0,
-          number: 0,
-          size: data.products?.length || 0,
-          first: true,
-          last: true,
-          numberOfElements: data.products?.length || 0,
-          empty: (data.products?.length || 0) === 0,
-        } as PageProductFindResponse;
-      }
-
-      // 그 외 (전체보기 또는 검색)에는 일반 상품 조회 API 사용
-      return productApi.getProducts({
-        productName: searchQuery || undefined,
-        page: 0,
-        size: 20,
-      });
-    },
+  // 카테고리 선택 + 검색어 없음: 백엔드가 "카테고리 상품"을 페이지로 안 주므로(리스트) 프론트에서 페이지네이션 처리
+  const categoryProductsQuery = useQuery({
+    queryKey: ["categoryProducts", selectedCategory],
+    queryFn: () => categoryApi.getCategoryProducts(selectedCategory as number),
+    enabled: !!selectedCategory && !searchQuery,
   });
+
+  // 전체보기/검색: /products pageable 사용
+  const productsQuery = useQuery({
+    queryKey: ["products", searchQuery, page],
+    queryFn: () =>
+      productApi.getProducts({
+        productName: searchQuery || undefined,
+        page,
+        size: pageSize,
+      }),
+    enabled: !selectedCategory || !!searchQuery,
+  });
+
+  const productsData: PageProductFindResponse | undefined = (() => {
+    if (selectedCategory && !searchQuery) {
+      const all = categoryProductsQuery.data?.products || [];
+      const totalElements = all.length;
+      const totalPages = Math.max(1, Math.ceil(totalElements / pageSize));
+      const safePage = Math.min(Math.max(0, page), totalPages - 1);
+      const start = safePage * pageSize;
+      const end = start + pageSize;
+      const content = all.slice(start, end);
+      return {
+        content,
+        totalPages,
+        totalElements,
+        number: safePage,
+        size: pageSize,
+        first: safePage === 0,
+        last: safePage === totalPages - 1,
+        numberOfElements: content.length,
+        empty: content.length === 0,
+      } as PageProductFindResponse;
+    }
+
+    return productsQuery.data;
+  })();
+
+  const isLoading =
+    selectedCategory && !searchQuery
+      ? categoryProductsQuery.isLoading
+      : productsQuery.isLoading;
 
   const handleCategoryClick = (id: number | null) => {
     setSelectedCategory(id);
+    setPage(0);
     if (id) {
       // 검색어 유지를 원치 않으면 검색어 제거
       const newSearchParams = new URLSearchParams();
@@ -77,5 +105,8 @@ export function useProductList() {
     selectedCategory,
     handleCategoryClick,
     searchQuery,
+    page,
+    setPage,
+    pageSize,
   };
 }

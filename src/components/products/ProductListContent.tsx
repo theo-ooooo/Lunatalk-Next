@@ -5,6 +5,7 @@ import { CategoryFilter } from "@/components/products/CategoryFilter";
 import ProductCard from "@/components/product/ProductCard";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { Pagination } from "@/components/common/Pagination";
 
 export default function ProductListContent() {
   const {
@@ -14,62 +15,83 @@ export default function ProductListContent() {
     selectedCategory,
     handleCategoryClick,
     searchQuery,
+    page,
+    setPage,
   } = useProductList();
 
   const products = productsData?.content || [];
+  const totalPages = productsData?.totalPages ?? 1;
+  const totalElements = productsData?.totalElements ?? products.length;
   const safeCategories = Array.isArray(categories) ? categories : [];
 
   return (
-    <div className="container mx-auto px-4 py-8 lg:py-12">
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-        <CategoryFilter
-          categories={safeCategories}
-          selectedCategory={selectedCategory}
-          onCategoryClick={handleCategoryClick}
-        />
+    <div className="bg-white">
+      <div className="container mx-auto px-4 py-6 md:py-8">
+        {/* Page Title */}
+        <div className="pb-4 border-b border-slate-100">
+          <h1 className="text-[18px] md:text-[22px] font-extrabold text-slate-900">
+            {searchQuery
+              ? `'${searchQuery}' 검색 결과`
+              : selectedCategory
+              ? safeCategories.find((c) => c.categoryId === selectedCategory)
+                  ?.categoryName
+              : "전체 상품"}
+          </h1>
+          <p className="text-slate-500 text-xs md:text-sm mt-1">
+            총 {totalElements}개
+          </p>
+        </div>
+
+        {/* Category chips */}
+        <div className="md:hidden">
+          <CategoryFilter
+            categories={safeCategories}
+            selectedCategory={selectedCategory}
+            onCategoryClick={handleCategoryClick}
+          />
+        </div>
 
         {/* Product Grid */}
-        <div className="flex-1">
-          <div className="mb-6 lg:mb-8">
-            <h1 className="text-xl lg:text-2xl font-bold text-slate-900">
-              {searchQuery
-                ? `'${searchQuery}' 검색 결과`
-                : selectedCategory
-                ? safeCategories.find((c) => c.categoryId === selectedCategory)
-                    ?.categoryName
-                : "전체 상품"}
-            </h1>
-            <p className="text-slate-500 text-sm mt-2">
-              총 {products.length}개의 상품
-            </p>
+        {isLoading ? (
+          <div className="py-24 flex justify-center items-center">
+            <Loader2 className="w-7 h-7 animate-spin text-slate-400" />
           </div>
-
-          {isLoading ? (
-            <div className="py-32 flex justify-center items-center">
-              <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
-            </div>
-          ) : products.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 lg:gap-8">
+        ) : products.length > 0 ? (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-8">
               {products.map((product) => (
                 <ProductCard key={product.productId} product={product} />
               ))}
             </div>
-          ) : (
-            <div className="py-32 text-center bg-slate-50 rounded-2xl">
-              <p className="text-slate-500 font-medium mb-4">
-                조건에 맞는 상품이 없습니다.
-              </p>
-              <Link
-                href="/"
-                className="px-6 py-2.5 bg-slate-900 text-white rounded-full text-sm font-medium hover:bg-slate-800 transition-colors"
-              >
-                홈으로 가기
-              </Link>
-            </div>
-          )}
-        </div>
+
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={(p) => {
+                setPage(p);
+                if (typeof window !== "undefined") {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
+            />
+          </>
+        ) : (
+          <div className="py-24 text-center bg-white border border-slate-200 rounded-xl">
+            <p className="text-slate-700 font-semibold mb-2">
+              조건에 맞는 상품이 없습니다.
+            </p>
+            <p className="text-slate-500 text-sm mb-6">
+              다른 조건으로 다시 찾아보세요.
+            </p>
+            <Link
+              href="/"
+              className="px-5 py-2 border border-slate-300 rounded-full text-sm font-semibold text-slate-800 hover:border-slate-400"
+            >
+              홈으로 가기
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
