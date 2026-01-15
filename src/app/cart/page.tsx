@@ -12,11 +12,11 @@ import { Loading } from "@/components/common/Loading";
 import { QueryErrorBoundary } from "@/components/common/QueryErrorBoundary";
 import { ShoppingCart, CreditCard } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
+import { CartTabs } from "@/components/cart/CartTabs";
 
 function CartContent() {
   const {
     cartItems,
-    isAuthenticated,
     selectedIds,
     isOrdering,
     totalAmount,
@@ -27,17 +27,8 @@ function CartContent() {
   } = useCart();
 
   return (
-    <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
-      <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
-        {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
-            장바구니
-          </h1>
-        </div>
-
-        {isAuthenticated ? (
-          cartItems.length > 0 ? (
+    <>
+      {cartItems.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
               {/* Cart List */}
               <div className="lg:col-span-3 space-y-4 sm:space-y-6">
@@ -137,33 +128,25 @@ function CartContent() {
                 </div>
               </div>
             </div>
-          ) : (
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
-              <div className="py-20 text-center">
-                <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-slate-300" />
-                <p className="text-lg font-medium text-slate-700 mb-2">
-                  장바구니에 담긴 상품이 없습니다.
-                </p>
-                <p className="text-sm text-slate-500 mb-6">
-                  원하는 상품을 장바구니에 담아보세요.
-                </p>
-                <Link href="/products">
-                  <Button variant="primary" size="lg">
-                    쇼핑하러 가기
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          )
-        ) : (
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
-            <div className="py-20 text-center">
-              {/* 비로그인 상태일 때는 내용을 숨기거나 간단한 안내만 표시 (모달이 뜸) */}
-            </div>
+      ) : (
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
+          <div className="py-20 text-center">
+            <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-slate-300" />
+            <p className="text-lg font-medium text-slate-700 mb-2">
+              장바구니에 담긴 상품이 없습니다.
+            </p>
+            <p className="text-sm text-slate-500 mb-6">
+              원하는 상품을 장바구니에 담아보세요.
+            </p>
+            <Link href="/products">
+              <Button variant="primary" size="lg">
+                쇼핑하러 가기
+              </Button>
+            </Link>
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -188,6 +171,7 @@ export default function CartPage() {
               장바구니
             </h1>
           </div>
+          <CartTabs />
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
             <div className="py-20 text-center">
               <Loading message="로그인 페이지로 이동 중..." fullScreen={false} />
@@ -209,6 +193,7 @@ export default function CartPage() {
             장바구니
           </h1>
         </div>
+        <CartTabs />
         {/* 조건부 쿼리이므로 Suspense 사용 불가, 대신 isLoading 체크 */}
         {cartHook.isLoading ? (
           <Loading message="장바구니를 불러오는 중..." fullScreen={false} />

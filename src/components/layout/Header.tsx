@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, User, Menu, Search, LogOut } from "lucide-react";
+import { ShoppingCart, User, Menu, Search, LogOut, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
@@ -83,6 +83,14 @@ export default function Header() {
             aria-label="장바구니"
           >
             <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
+          </Link>
+
+          <Link
+            href="/wishlist"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+            aria-label="찜한 상품"
+          >
+            <Heart className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
           </Link>
 
           {isAuthenticated ? (
