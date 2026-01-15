@@ -72,6 +72,8 @@ export interface Product {
   category: Category;
   isLiked?: boolean; // 좋아요 여부
   likeCount?: number; // 좋아요 개수
+  discountRate?: number; // (선택) 할인율 - 백엔드 제공 시만 표시
+  reviewCount?: number; // (선택) 리뷰 수 - 백엔드 제공 시만 표시
 }
 
 export interface ProductFindResponse extends Product {}

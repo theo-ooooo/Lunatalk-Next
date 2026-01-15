@@ -179,7 +179,8 @@ export function useProductLike(
   };
 
   return {
-    isLiked,
+    // 로그아웃해도 캐시에 남아있는 isLiked가 UI에 보이지 않도록 비로그인 시 강제 off 처리
+    isLiked: isAuthenticated ? isLiked : false,
     likeCount,
     isToggling: toggleLikeMutation.isPending,
     handleToggleLike,

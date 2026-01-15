@@ -47,7 +47,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="aspect-square relative overflow-hidden rounded-[16px] bg-gray-50 mb-3 transition-all duration-300 group-hover:shadow-md">
+      <div className="aspect-square relative overflow-hidden rounded-[14px] bg-white border border-slate-200 mb-2">
         <Image
           src={imgSrc}
           alt={product.name || product.productName || "상품 이미지"}
@@ -78,7 +78,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             handleToggleLike();
           }}
           disabled={isToggling}
-          className={`absolute top-2 right-2 p-1.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all ${
+          className={`absolute top-2 right-2 p-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200 transition-all
+          opacity-100 md:opacity-0 md:group-hover:opacity-100 ${
             isLiked
               ? "text-red-500 fill-red-500 hover:bg-red-50"
               : "text-slate-400 hover:text-slate-600 hover:bg-white"
@@ -92,18 +93,27 @@ export default function ProductCard({ product }: ProductCardProps) {
         </button>
       </div>
 
-      <div className="space-y-1 px-1">
-        <p className="text-[11px] font-medium text-slate-400">
-          {product.category?.categoryName}
-        </p>
-        <h3 className="font-medium text-slate-800 text-[14px] leading-snug line-clamp-2 min-h-[2.2rem] group-hover:text-slate-900 transition-colors">
+      <div className="px-0.5">
+        <h3 className="text-[13px] md:text-[14px] leading-snug line-clamp-2 min-h-[2.1rem] text-slate-900">
           {product.name || product.productName}
         </h3>
-        <div className="pt-0.5 flex items-baseline gap-0.5">
-          <span className="font-bold text-lg text-slate-900">
-            {formatPrice(product.price)}
+
+        <div className="mt-1 flex items-baseline gap-1">
+          {typeof (product as any).discountRate === "number" &&
+            (product as any).discountRate > 0 && (
+              <span className="text-[13px] font-extrabold text-red-500">
+                {(product as any).discountRate}%
+              </span>
+            )}
+          <span className="text-[15px] md:text-[16px] font-extrabold text-slate-900">
+            {formatPrice(product.price)}원
           </span>
-          <span className="text-xs font-medium text-slate-800">원</span>
+        </div>
+
+        <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
+          <span className="truncate">{product.category?.categoryName}</span>
+          <span className="w-px h-3 bg-slate-200" aria-hidden />
+          <span>리뷰 {(product as any).reviewCount ?? 0}</span>
         </div>
       </div>
     </Link>
