@@ -284,6 +284,11 @@ export async function fetchExtended<T>(
             // 재발급 실패 시 토큰 정리 후 아래 공통 에러 처리로 진행
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
+
+            // 재발급까지 실패하면 메인으로 이동
+            if (window.location.pathname !== "/") {
+              window.location.replace("/");
+            }
           }
         }
 
