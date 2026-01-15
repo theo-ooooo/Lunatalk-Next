@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import { productApi } from "@/services/api";
 import { CartTabs } from "@/components/cart/CartTabs";
-import ProductCard from "@/components/product/ProductCard";
+import ProductRow from "@/components/product/ProductRow";
 import { Loading } from "@/components/common/Loading";
 import { Button } from "@/components/ui/Button";
 
@@ -26,20 +26,21 @@ export default function WishlistPage() {
     enabled: isAuthenticated,
   });
 
-  // 토글(optimistic)로 isLiked가 false로 바뀌면 즉시 목록에서 제거되도록 필터링
   const products = (data?.content || []).filter((p) => p.isLiked !== false);
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
+      <div className="min-h-screen bg-white py-4 sm:py-6 md:py-8">
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
           <div className="mb-4 sm:mb-6">
             <h1 className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
               찜한 상품
             </h1>
           </div>
-          <CartTabs />
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
+          <div className="hidden md:block">
+            <CartTabs />
+          </div>
+          <div className="bg-white rounded-xl border border-slate-200 p-8 sm:p-12">
             <div className="py-20 text-center">
               <Loading message="로그인 페이지로 이동 중..." fullScreen={false} />
             </div>
@@ -50,19 +51,21 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-4 sm:py-6 md:py-8">
+    <div className="min-h-screen bg-white py-4 sm:py-6 md:py-8">
       <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
         <div className="mb-4 sm:mb-6">
           <h1 className="text-xl sm:text-2xl lg:text-xl font-bold text-slate-900">
             찜한 상품
           </h1>
         </div>
-        <CartTabs />
+        <div className="hidden md:block">
+          <CartTabs />
+        </div>
 
         {isLoading ? (
           <Loading message="찜한 상품을 불러오는 중..." fullScreen={false} />
         ) : isError ? (
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
+          <div className="bg-white rounded-xl border border-slate-200 p-8 sm:p-12">
             <div className="py-20 text-center">
               <p className="text-slate-500 mb-4">
                 찜한 상품을 불러오는 중 오류가 발생했습니다.
@@ -71,7 +74,7 @@ export default function WishlistPage() {
             </div>
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 p-8 sm:p-12">
+          <div className="bg-white rounded-xl border border-slate-200 p-8 sm:p-12">
             <div className="py-20 text-center">
               <p className="text-lg font-medium text-slate-700 mb-2">
                 찜한 상품이 없습니다.
@@ -85,9 +88,9 @@ export default function WishlistPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="bg-white border border-slate-200 rounded-xl px-4 sm:px-6">
             {products.map((product) => (
-              <ProductCard key={product.productId} product={product} />
+              <ProductRow key={product.productId} product={product} />
             ))}
           </div>
         )}

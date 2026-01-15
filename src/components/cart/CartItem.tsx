@@ -18,14 +18,14 @@ export function CartItem({
   onDelete,
 }: CartItemProps) {
   return (
-    <div className="flex gap-3 sm:gap-4 p-3 sm:p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
+    <div className="flex gap-3 sm:gap-4 py-4 border-b border-slate-200">
       <input
         type="checkbox"
-        className="w-4 h-4 sm:w-5 sm:h-5 mt-1 sm:mt-2 rounded border-slate-300 text-slate-900 focus:ring-slate-900 flex-shrink-0"
+        className="w-4 h-4 sm:w-5 sm:h-5 mt-1 rounded border-slate-300 text-slate-900 focus:ring-slate-900 flex-shrink-0"
         checked={isSelected}
         onChange={(e) => onSelect(e.target.checked)}
       />
-      <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
+      <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-md overflow-hidden flex-shrink-0 border border-slate-200">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={getImageUrl(item.product.images?.[0]?.imagePath)}
@@ -35,7 +35,7 @@ export function CartItem({
       </div>
       <div className="flex-1 min-w-0 flex flex-col justify-between">
         <div>
-          <h3 className="font-bold text-sm sm:text-base lg:text-sm text-slate-900 line-clamp-2 mb-1">
+          <h3 className="font-semibold text-sm sm:text-base lg:text-sm text-slate-900 line-clamp-2 mb-1">
             {item.product.name || item.product.productName}
           </h3>
 
@@ -57,8 +57,8 @@ export function CartItem({
             <span>수량: {item.quantity}개</span>
           </div>
         </div>
-        <div className="flex items-center justify-between pt-2 border-t border-slate-200">
-          <span className="text-xs lg:text-[10px] text-slate-500">상품금액</span>
+        <div className="flex items-center justify-between pt-2">
+          <span className="text-xs text-slate-500">상품금액</span>
           <div className="flex items-center gap-2">
             <span className="font-bold text-base sm:text-lg lg:text-base text-slate-900">
               {formatPrice(item.product.price * item.quantity)}원
@@ -77,5 +77,3 @@ export function CartItem({
     </div>
   );
 }
-
-
