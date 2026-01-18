@@ -28,20 +28,20 @@ export function OrderItems({ items }: OrderItemsProps) {
                 />
               </Link>
 
-              <div className="min-w-0">
+            <div className="min-w-0">
                 <Link
                   href={`/products/${item.productId}`}
                   className="text-sm font-semibold text-slate-900 line-clamp-2 hover:underline"
                 >
-                  {item.productName}
+                {item.productName}
                 </Link>
-                <div className="mt-1 flex items-center gap-2 text-xs text-slate-500 flex-wrap">
-                  {item.color && (
-                    <span className="px-2 py-0.5 rounded-full border border-slate-200 text-slate-600 bg-white">
-                      {item.color}
-                    </span>
-                  )}
-                  <span>수량 {item.quantity}개</span>
+              <div className="mt-1 flex items-center gap-2 text-xs text-slate-500 flex-wrap">
+                {item.color && (
+                  <span className="px-2 py-0.5 rounded-full border border-slate-200 text-slate-600 bg-white">
+                    {item.color}
+                  </span>
+                )}
+                <span>수량 {item.quantity}개</span>
                 </div>
               </div>
             </div>

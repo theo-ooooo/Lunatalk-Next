@@ -42,12 +42,12 @@ export default function MobileSubHeader() {
     // effect 바디에서 setState를 동기 호출하면 cascading render 경고가 날 수 있어
     // 업데이트는 비동기 콜백으로 한 번만 수행한다.
     const timer = window.setTimeout(() => {
-      if (pathname !== "/products") {
+    if (pathname !== "/products") {
         setQueryState({ categoryId: null, search: null });
-        return;
-      }
+      return;
+    }
 
-      const sp = new URLSearchParams(window.location.search);
+    const sp = new URLSearchParams(window.location.search);
       setQueryState({
         categoryId: sp.get("categoryId"),
         search: sp.get("search"),
