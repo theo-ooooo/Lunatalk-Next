@@ -54,13 +54,13 @@ export default function Footer() {
             <div className="text-[12px] font-semibold text-slate-700">고객센터</div>
             <div className="mt-2 space-y-1.5 text-[12px] text-slate-500">
               <div>
-                <a href="tel:1544-0000" className="hover:text-slate-900">
-                  1544-0000
+                <a href="tel:032-684-1565" className="hover:text-slate-900">
+                  032-684-1565
                 </a>
               </div>
               <div>
-                <a href="mailto:cs@lunatalk.co.kr" className="hover:text-slate-900">
-                  cs@lunatalk.co.kr
+                <a href="mailto:seojin_industry@naver.com" className="hover:text-slate-900">
+                  seojin_industry@naver.com
                 </a>
               </div>
               <div className="text-slate-400">
