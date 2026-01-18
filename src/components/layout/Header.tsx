@@ -23,7 +23,7 @@ export default function Header() {
         <div className="px-4 h-12 flex items-center justify-between">
           <Link href="/" className="flex items-center" aria-label="홈">
             <Image
-              src="https://admin.lunatalk.co.kr/static/media/logo.e0e49014f4ed6f070031.jpg"
+              src="/logo.png"
               alt="LUNATALK"
               width={120}
               height={36}
@@ -95,7 +95,7 @@ export default function Header() {
           <div className="h-14 flex items-center justify-between">
             <Link href="/" className="flex items-center" aria-label="홈">
               <Image
-                src="https://admin.lunatalk.co.kr/static/media/logo.e0e49014f4ed6f070031.jpg"
+                src="/logo.png"
                 alt="LUNATALK"
                 width={140}
                 height={44}
