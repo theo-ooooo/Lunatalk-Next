@@ -5,12 +5,29 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Brand */}
           <div className="md:col-span-4">
-            <div className="text-sm font-extrabold text-slate-900">LUNATALK</div>
-            <p className="mt-2 text-[12px] leading-relaxed text-slate-500">
-              루나톡 쇼핑몰
-              <br />
-              Copyright © LUNATALK Corp. All rights reserved.
-            </p>
+            <div className="text-[12px] font-semibold text-slate-700">
+              주식회사 서진산업
+            </div>
+            <div className="mt-2 space-y-1.5 text-[12px] text-slate-500">
+              <p>
+                대표이사 : 강대용 / 경기도 부천시 원종로 131(고강동) 3층 서진산업
+              </p>
+              <p>
+                사업자등록번호 : 130-86-59053 / 통신판매업 신고 : 2011-경기부천-1500
+              </p>
+              <p>
+                개인정보보호책임자 : 강대용 /{" "}
+                <a
+                  href="mailto:lunatalk.helpper@gmail.com"
+                  className="hover:text-slate-900"
+                >
+                  lunatalk.helpper@gmail.com
+                </a>
+              </p>
+              <p className="text-slate-400 font-semibold">
+                COPYRIGHT © LUNATALK ALL RIGHTS RESERVED.
+              </p>
+            </div>
           </div>
 
           {/* Links */}
@@ -53,14 +70,6 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-slate-100 text-[11px] text-slate-400">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-            <div>
-              상호: LUNATALK · 대표: (미기재) · 사업자등록번호: (미기재)
-            </div>
-            <div>통신판매업신고: (미기재) · 주소: (미기재)</div>
-          </div>
-        </div>
       </div>
     </footer>
   );
