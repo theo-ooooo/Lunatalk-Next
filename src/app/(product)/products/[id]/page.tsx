@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props) {
         description: `${product.name}${price ? ` | ${price}` : ""}${
           category ? ` | ${category}` : ""
         }`,
-        type: "product",
+        type: "website",
         images: imageUrl ? [imageUrl] : [],
         url: `/products/${id}`,
       },
