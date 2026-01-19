@@ -13,6 +13,8 @@ import { useInquiryForm } from "@/hooks/inquiry/useInquiryForm";
 
 interface InquiryFormProps {
   initialData?: InquiryResponse;
+  initialType?: "PRODUCT" | "ORDER" | "GENERAL";
+  initialOrderNumber?: string;
   onSubmit?: (
     data: InquiryCreateRequest | InquiryUpdateRequest
   ) => void | Promise<void>;
@@ -23,6 +25,8 @@ interface InquiryFormProps {
 
 export function InquiryForm({
   initialData,
+  initialType,
+  initialOrderNumber,
   onSubmit,
   onCreate,
   onUpdate,
@@ -44,6 +48,8 @@ export function InquiryForm({
     isFormValid,
   } = useInquiryForm({
     initialData,
+    initialType,
+    initialOrderNumber,
     onSubmit,
     onCreate,
     onUpdate,
@@ -158,4 +164,3 @@ export function InquiryForm({
     </form>
   );
 }
-

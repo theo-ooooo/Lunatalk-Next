@@ -1,17 +1,19 @@
-"use client";
-
-import { InquiryForm } from "@/components/inquiry/form/InquiryForm";
 import { InquiryPageLayout } from "@/components/inquiry/layout/InquiryPageLayout";
-import { useCreateInquiry } from "@/hooks/inquiry/useCreateInquiry";
+import { CreateInquiryForm } from "./CreateInquiryForm";
 
-export default function CreateInquiryPage() {
-  const { createInquiry, isPending } = useCreateInquiry();
+interface Props {
+  searchParams: Promise<{
+    orderNumber?: string;
+  }>;
+}
+
+export default async function CreateInquiryPage({ searchParams }: Props) {
+  const { orderNumber } = await searchParams;
+  const backHref = orderNumber ? `/orders/${orderNumber}` : "/inquiries";
 
   return (
-    <InquiryPageLayout backHref="/inquiries" title="문의하기">
-      <InquiryForm onCreate={createInquiry} isPending={isPending} />
+    <InquiryPageLayout backHref={backHref} title="문의하기">
+      <CreateInquiryForm orderNumber={orderNumber} />
     </InquiryPageLayout>
   );
 }
-
-

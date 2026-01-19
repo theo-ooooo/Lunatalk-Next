@@ -9,6 +9,8 @@ import {
 
 interface UseInquiryFormProps {
   initialData?: InquiryResponse;
+  initialType?: "PRODUCT" | "ORDER" | "GENERAL";
+  initialOrderNumber?: string;
   onSubmit?: (
     data: InquiryCreateRequest | InquiryUpdateRequest
   ) => void | Promise<void>;
@@ -18,12 +20,14 @@ interface UseInquiryFormProps {
 
 export function useInquiryForm({
   initialData,
+  initialType,
+  initialOrderNumber,
   onSubmit,
   onCreate,
   onUpdate,
 }: UseInquiryFormProps) {
   const [type, setType] = useState<"PRODUCT" | "ORDER" | "GENERAL">(
-    initialData?.type || "GENERAL"
+    initialData?.type || initialType || "GENERAL"
   );
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
@@ -31,7 +35,9 @@ export function useInquiryForm({
     number | undefined
   >(initialData?.referenceId);
   const [selectedProductName, setSelectedProductName] = useState<string>("");
-  const [selectedOrderNumber, setSelectedOrderNumber] = useState<string>("");
+  const [selectedOrderNumber, setSelectedOrderNumber] = useState<string>(
+    initialOrderNumber || ""
+  );
 
   const handleTypeChange = (newType: "PRODUCT" | "ORDER" | "GENERAL") => {
     setType(newType);
@@ -109,4 +115,3 @@ export function useInquiryForm({
     isFormValid,
   };
 }
-

@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+import { useRouter } from "next/navigation";
 import {
   formatPrice,
   getOrderStatusLabel,
@@ -18,7 +19,12 @@ export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 
 function OrderDetailContent() {
+  const router = useRouter();
   const { order, delivery } = useOrderDetail();
+
+  const handleInquiryClick = () => {
+    router.push(`/inquiries/create?orderNumber=${order.orderNumber}`);
+  };
 
   return (
     <div className="min-h-screen bg-white py-4 sm:py-6 md:py-8">
@@ -62,7 +68,12 @@ function OrderDetailContent() {
             </div>
 
             <div className="flex gap-2 shrink-0">
-              <Button variant="outline" size="sm" className="h-9 px-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-3"
+                onClick={handleInquiryClick}
+              >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 문의
               </Button>
