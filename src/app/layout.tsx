@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import GlobalModal from "@/components/providers/GlobalModal";
@@ -99,6 +100,7 @@ export default function RootLayout({
         <QueryProvider>
           {children}
           <GlobalModal />
+          <Analytics />
         </QueryProvider>
       </body>
     </html>
