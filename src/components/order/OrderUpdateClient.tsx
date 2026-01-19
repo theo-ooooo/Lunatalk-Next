@@ -120,7 +120,6 @@ export default function OrderUpdateClient({ order }: OrderUpdateClientProps) {
                 className="flex gap-4 py-4 border-b border-slate-200 last:border-b-0"
               >
                 <div className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={
                       item.productImageUrl
