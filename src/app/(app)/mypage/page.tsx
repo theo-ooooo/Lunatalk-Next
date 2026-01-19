@@ -1,14 +1,40 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useMyPage } from "@/hooks/mypage/useMyPage";
+import { useAuthStore } from "@/store/useAuthStore";
 import { OrderHistoryList } from "@/components/mypage/OrderHistoryList";
 import Link from "next/link";
 import { ChevronRight, User } from "lucide-react";
+import { Loading } from "@/components/common/Loading";
 
 export default function MyPage() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const { me, ordersData, isLoading, orderStats } = useMyPage();
 
-  if (!me) return <div className="py-20 text-center">로그인이 필요합니다.</div>;
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login?redirect=/mypage");
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loading message="로그인 페이지로 이동 중..." fullScreen={false} />
+      </div>
+    );
+  }
+
+  if (!me) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loading message="정보를 불러오는 중..." fullScreen={false} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">

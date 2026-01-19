@@ -1,6 +1,30 @@
 import { exhibitionApi, productApi } from "@/services/api";
 import ProductCard from "@/components/product/ProductCard";
 import ProductGrid from "@/components/products/ProductGrid";
+import type { Metadata } from "next";
+
+// Production 환경에서만 SEO 메타데이터 적용
+const isProduction = process.env.NODE_ENV === "production";
+
+export const metadata: Metadata = isProduction
+  ? {
+      title: "홈",
+      description:
+        "루나톡에서 다양한 상품과 기획전을 만나보세요. 일상의 즐거움을 선사하는 쇼핑몰입니다.",
+      openGraph: {
+        title: "LUNATALK - 일상의 즐거움",
+        description: "루나톡에서 다양한 상품과 기획전을 만나보세요.",
+        url: "/",
+      },
+    }
+  : {
+      title: "홈",
+      description: "루나톡 쇼핑몰입니다.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
 
 // 메인 페이지는 서버 컴포넌트입니다.
 export default async function Home() {

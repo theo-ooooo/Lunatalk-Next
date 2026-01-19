@@ -112,7 +112,7 @@ export interface OrderItem {
   quantity: number;
   totalPrice: number;
   color?: string;
-  productImageUrl?: string | null;
+  productImageUrl?: string;
 }
 
 export interface Delivery {

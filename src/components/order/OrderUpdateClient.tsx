@@ -3,9 +3,8 @@
 import { Order } from "@/types/api";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import { useOrderUpdate } from "@/hooks/order/useOrderUpdate";
-import { SummaryRow } from "@/components/ui/SummaryRow";
 
 interface OrderUpdateClientProps {
   order: Order;
@@ -31,7 +30,9 @@ export default function OrderUpdateClient({ order }: OrderUpdateClientProps) {
       <div className="flex-1 space-y-4">
         <div className="bg-white rounded-xl border border-slate-200">
           <div className="px-4 sm:px-6 py-4 border-b border-slate-200">
-            <h2 className="text-sm font-extrabold text-slate-900">배송지 정보</h2>
+            <h2 className="text-sm font-extrabold text-slate-900">
+              배송지 정보
+            </h2>
           </div>
           <div className="p-4 sm:p-6 space-y-4">
             <Input
@@ -107,20 +108,25 @@ export default function OrderUpdateClient({ order }: OrderUpdateClientProps) {
         {/* 주문 상품 요약 */}
         <div className="bg-white rounded-xl border border-slate-200">
           <div className="px-4 sm:px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-            <h2 className="text-sm font-extrabold text-slate-900">
-              주문 상품
-            </h2>
+            <h2 className="text-sm font-extrabold text-slate-900">주문 상품</h2>
             <span className="text-xs text-slate-500">
               {order.orderItems.length}개
             </span>
           </div>
           <div className="px-4 sm:px-6">
             {order.orderItems.map((item, idx) => (
-              <div key={idx} className="flex gap-4 py-4 border-b border-slate-200 last:border-b-0">
+              <div
+                key={idx}
+                className="flex gap-4 py-4 border-b border-slate-200 last:border-b-0"
+              >
                 <div className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="https://placehold.co/100x100/f1f5f9/94a3b8?text=Product" // 이미지 URL 정보가 OrderItem에 필요함
+                    src={
+                      item.productImageUrl
+                        ? getImageUrl(item.productImageUrl)
+                        : "https://placehold.co/100x100/f1f5f9/94a3b8?text=Product"
+                    }
                     alt={item.productName}
                     className="w-full h-full object-cover"
                   />
@@ -152,7 +158,9 @@ export default function OrderUpdateClient({ order }: OrderUpdateClientProps) {
           <div className="px-4 py-4 space-y-2">
             <div className="flex justify-between text-sm text-slate-700">
               <span>총 상품금액</span>
-              <span className="font-semibold">{formatPrice(order.totalPrice)}원</span>
+              <span className="font-semibold">
+                {formatPrice(order.totalPrice)}원
+              </span>
             </div>
             <div className="flex justify-between text-sm text-slate-700">
               <span>배송비</span>

@@ -16,20 +16,59 @@ interface Props {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
+
+  // Production 환경이 아니면 기본 메타데이터만 반환
+  if (process.env.NODE_ENV !== "production") {
+    return {
+      title: "상품 상세",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
   try {
     const product = await productApi.getProduct(Number(id));
+    const imageUrl = product.images?.[0]?.imageUrl
+      ? getImageUrl(product.images[0].imageUrl)
+      : undefined;
+    const price = product.price ? `${product.price.toLocaleString()}원` : "";
+    const category = product.category?.categoryName || "";
+
     return {
       title: `${product.name} - LUNATALK`,
-      description: `루나톡에서 ${product.name}을 만나보세요.`,
+      description: `${product.name}${price ? ` | ${price}` : ""}${
+        category ? ` | ${category}` : ""
+      }. 루나톡에서 만나보세요.`,
+      keywords: [product.name, category, "루나톡", "LUNATALK"].filter(Boolean),
       openGraph: {
-        images: product.images?.[0]?.imageUrl
-          ? [getImageUrl(product.images?.[0]?.imageUrl)]
-          : [],
+        title: `${product.name} - LUNATALK`,
+        description: `${product.name}${price ? ` | ${price}` : ""}${
+          category ? ` | ${category}` : ""
+        }`,
+        type: "product",
+        images: imageUrl ? [imageUrl] : [],
+        url: `/products/${id}`,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${product.name} - LUNATALK`,
+        description: `${product.name}${price ? ` | ${price}` : ""}`,
+        images: imageUrl ? [imageUrl] : [],
+      },
+      alternates: {
+        canonical: `/products/${id}`,
       },
     };
   } catch (error) {
     return {
-      title: "상품을 찾을 수 없습니다.",
+      title: "상품을 찾을 수 없습니다. - LUNATALK",
+      description: "요청하신 상품을 찾을 수 없습니다.",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 }
@@ -80,5 +119,3 @@ export default async function ProductDetailPage({ params }: Props) {
     </div>
   );
 }
-
-

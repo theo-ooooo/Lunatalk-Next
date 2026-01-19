@@ -14,10 +14,27 @@ interface Props {
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "검색 - LUNATALK",
-  description: "원하는 상품을 검색해보세요.",
-};
+// Production 환경에서만 SEO 메타데이터 적용
+const isProduction = process.env.NODE_ENV === "production";
+
+export const metadata = isProduction
+  ? {
+      title: "검색",
+      description:
+        "원하는 상품을 검색해보세요. 루나톡에서 다양한 상품을 찾아보세요.",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    }
+  : {
+      title: "검색",
+      description: "원하는 상품을 검색해보세요.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
 
 export default async function SearchPage({ searchParams }: Props) {
   const { q } = await searchParams;
