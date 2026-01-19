@@ -6,15 +6,6 @@ import GlobalModal from "@/components/providers/GlobalModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
-<<<<<<< Updated upstream
-export const metadata: Metadata = {
-  title: "LUNATALK - 일상의 즐거움",
-  description: "루나톡 쇼핑몰입니다.",
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
-=======
 // Production 환경에서만 SEO 메타데이터 적용
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -94,7 +85,6 @@ export const metadata: Metadata = isProduction
         follow: false,
       },
     };
->>>>>>> Stashed changes
 
 export default function RootLayout({
   children,
