@@ -110,6 +110,19 @@ export default function ProductCard({ product }: ProductCardProps) {
           </span>
         </div>
 
+        {product.colors && product.colors.length > 0 && (
+          <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+            {product.colors.map((color, idx) => (
+              <span
+                key={idx}
+                className="text-[10px] px-1.5 py-0.5 bg-white text-slate-600 rounded border border-slate-200"
+              >
+                {color}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
           <span className="truncate">{product.category?.categoryName}</span>
           <span className="w-px h-3 bg-slate-200" aria-hidden />

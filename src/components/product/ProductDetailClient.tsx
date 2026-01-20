@@ -105,6 +105,19 @@ export default function ProductDetailClient({ productId }: Props) {
                 {product.name}
               </h1>
 
+              {product.colors && product.colors.length > 0 && (
+                <div className="mt-2 flex items-center gap-2 flex-wrap">
+                  {product.colors.map((color, idx) => (
+                    <span
+                      key={idx}
+                      className="text-xs px-2 py-1 bg-white text-slate-600 rounded border border-slate-200"
+                    >
+                      {color}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               <div className="mt-3 flex items-end justify-between gap-3">
                 <div className="flex items-baseline gap-1">
                   <span className="text-[22px] md:text-[30px] font-extrabold text-slate-900">
