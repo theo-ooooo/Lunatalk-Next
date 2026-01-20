@@ -6,6 +6,7 @@ import { FormEvent, useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthTabs from "@/components/auth/AuthTabs";
+import { KakaoLoginButton } from "@/components/auth/KakaoLoginButton";
 
 export default function LoginPageClient() {
   const router = useRouter();
@@ -82,6 +83,21 @@ export default function LoginPageClient() {
             </button>
           </form>
 
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-slate-500">또는</span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <KakaoLoginButton />
+            </div>
+          </div>
+
           <div className="mt-6 pt-4 border-t border-slate-100 text-center text-sm text-slate-600">
             계정이 없으신가요?{" "}
             <Link
@@ -96,5 +112,3 @@ export default function LoginPageClient() {
     </div>
   );
 }
-
-

@@ -53,9 +53,26 @@ export default function MyPage() {
                   <User className="w-5 h-5 text-slate-400" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-sm font-extrabold text-slate-900 truncate">
-                    {me.nickname || me.username}
-                    <span className="font-semibold text-slate-500"> 님</span>
+                  <div className="flex items-center gap-1.5">
+                    {me.provider === "KAKAO" && (
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="shrink-0"
+                      >
+                        <path
+                          d="M9 0C4.03 0 0 3.27 0 7.3c0 2.55 1.7 4.8 4.25 6.1L3 18l5.25-2.9c.5.05 1 .1 1.5.1 4.97 0 9-3.27 9-7.3S13.97 0 9 0z"
+                          fill="#FEE500"
+                        />
+                      </svg>
+                    )}
+                    <div className="text-sm font-extrabold text-slate-900 truncate">
+                      {me.nickname || me.username}
+                      <span className="font-semibold text-slate-500"> 님</span>
+                    </div>
                   </div>
                   <div className="text-xs text-slate-500 truncate mt-0.5">
                     {me.email}
@@ -171,5 +188,3 @@ export default function MyPage() {
     </div>
   );
 }
-
-

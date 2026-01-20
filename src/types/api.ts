@@ -163,6 +163,7 @@ export interface Member {
   phone: string;
   email: string;
   profileImgUrl?: string;
+  provider?: "KAKAO" | "LOCAL" | string;
   createdAt: string;
 }
 

@@ -131,7 +131,9 @@ export function InquiryForm({
         </label>
         <Input
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setTitle(e.target.value)
+          }
           placeholder="문의 제목을 입력하세요"
           required
         />

@@ -105,6 +105,14 @@ export const authApi = {
       body: JSON.stringify(data),
     });
   },
+  kakaoLogin: async (code: string) => {
+    return fetchExtended<AuthTokenResponse>(
+      `/auth/kakao/callback?code=${encodeURIComponent(code)}`,
+      {
+        method: "POST",
+      }
+    );
+  },
   getMe: async () => {
     return fetchExtended<Member>("/members/me");
   },
