@@ -80,7 +80,7 @@ export const categoryApi = {
 // 기획전 관련
 export const exhibitionApi = {
   getExhibitions: async () => {
-    return fetchExtended<Exhibition[]>("/exhibitions", {
+    return fetchExtended<Exhibition[]>("/exhibitions/active", {
       cache: "no-store",
     });
   },
